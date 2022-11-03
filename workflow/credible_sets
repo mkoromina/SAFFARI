@@ -3,7 +3,7 @@ from numpy import expand_dims
 import pandas as pd
 
 #wildcard here will be the prefix of the .tsv files for a certain cohort
-SS = ["daner_bip_pgc3_polyfun_susie_all", "daner_bip_pgc3_polyfun_finemap_all", "daner_bip_pgc3_only_susie_all", "daner_bip_pgc3_only_finemap_all"]  
+SS = ["cohort_polyfun_susie_all", "cohort_polyfun_finemap_all", "cohort_only_susie_all", "cohort_only_finemap_all"]  
 
 
 rule_all:
