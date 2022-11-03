@@ -1,7 +1,7 @@
 # Fine-mapping pipeline implemented through snakemake
-A comprehensive statistical and functional finemapping pipeline incorporating 4 fine-mapping tools (SuSiE, FINEMAP, Polyfun+SuSiE, Polyfun+FINEMAP), two reference panels and two differential finemapping ranges/windows.
+A comprehensive statistical and functional finemapping pipeline incorporating 4 fine-mapping tools (SuSiE, FINEMAP, Polyfun+SuSiE, Polyfun+FINEMAP), two reference panels (HRC, UKB) and two differential finemapping ranges/windows (3Mb window or windows defined by the LD structure).
 
 The pipeline is comprised of the following 3 components:
 - fetching the correct UKB LD matrix name for each GWS locus 
 - running fine-mapping on cleaned GWAS summary statistics
-- merging all independent fine-mapping jobs and processing these (in prep)
+- merging all independent fine-mapping jobs and processing these
