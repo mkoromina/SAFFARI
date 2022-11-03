@@ -1,0 +1,22 @@
+#from ossaudiodev import SNDCTL_DSP_SUBDIVIDE
+from numpy import expand_dims
+import pandas as pd
+
+#wildcard here will be the prefix of the .tsv files for a certain cohort
+SS = ["daner_bip_pgc3_polyfun_susie_all", "daner_bip_pgc3_polyfun_finemap_all", "daner_bip_pgc3_only_susie_all", "daner_bip_pgc3_only_finemap_all"]  
+
+
+rule_all:
+    input:
+    	expand("output/{ss}_credible_sets.tsv", ss = SS),
+		expand("output/{ss}_binned_loci.tsv", ss = SS)
+
+
+rule process_CSs_PIPs:
+    	input:  
+			loci = expand("output/{ss}_toploci.csv", ss= SS)
+    	output: 
+			CS = expand("output/{ss}_credible_sets.tsv", ss = SS),
+			binned_loci = expand("output/{ss}_binned_loci.tsv", ss = SS)
+    	conda: "envs/r.yaml"
+    	script: "scripts/credible_sets.R"
