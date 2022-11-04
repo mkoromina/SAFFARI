@@ -1,3 +1,6 @@
+#the input here is a merged matrix of all fine-mapping jobs (per method!) for all loci.
+#make sure to create beforehand a 'LOCUS' column to denote in which locus the fine mapped SNP was found within.
+
 library(dplyr)
 library(tidyverse)
 library(purrr)
