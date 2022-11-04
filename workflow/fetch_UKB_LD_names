@@ -1,6 +1,7 @@
 #we need the correct 'names' for the UKB LD matrices of our GWS loci
+#run for each dataset separately until further parallelization
 
-SS = ["daner_bip_pgc3", "suicide_gwas"]  
+SS = ["suicide_gwas"]  #then daner_bip_pgc3
 
 rule all:
         input: expand("resources/{ss}_loci_ranges.tsv", ss = SS)
