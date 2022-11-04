@@ -10,4 +10,5 @@ rule import_finemap_loci:
     	input:  expand("resources/{ss}_toploci.csv", ss= SS)
     	output: expand("resources/{ss}_loci_ranges.tsv", ss = SS)
     	conda: "envs/r.yaml"
+        resources: mem_mb = 10000
     	script: "scripts/UKBiobank_LD.R"
