@@ -6,6 +6,11 @@
 SS = ["daner_bip_pgc3", "suicide_gwas"]  
 CHR = list(range(1,23))
 
+rule all:
+        input:
+        expand("resources/{ss}_loci_ranges.tsv", ss = SS")
+
+
 rule import_finemap_loci:
     	input:  expand("resources/{ss}_toploci.csv", ss= SS)
     	output: expand("resources/{ss}_loci_ranges.tsv", ss = SS)
