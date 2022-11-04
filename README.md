@@ -9,5 +9,5 @@ The pipeline is comprised of the following 3 components:
 
 First ensure that you have installed snakemake in your computer, local computing cluster etc. To do this, follow the instructions as found here https://snakemake.readthedocs.io/en/stable/getting_started/installation.html.
 Make sure to create a conda/mamba snakemake environment that you need to activate prior to the pipeline execution.
-To run snakemake pipelines as this one, follow one of the two options: (i) set up a slurm or lsf profile as in https://github.com/Snakemake-Profiles/slurm or https://github.com/Snakemake-Profiles/lsf which will parallelize job submission and execution  (ii) run "snakemake -s Snakefile" from within the directory where your Snakefile is stored by using screen sessions.
+To run snakemake pipelines as this one, follow one of the two options: (i) set up a slurm or lsf profile as in https://github.com/Snakemake-Profiles/slurm or https://github.com/Snakemake-Profiles/lsf which will parallelize job submission and execution, or, (ii) run "snakemake -s Snakefile" from within the directory where your Snakefile is stored by using screen sessions.
 
