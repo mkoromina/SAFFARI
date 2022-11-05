@@ -7,9 +7,10 @@ The pipeline is comprised of the following 3 Snakemake modules:
 - merging all independent fine-mapping jobs and processing these
 
 # Dependencies:
-(i) Polyfun (Weissbrod et al., 2020), with installation instructions found in here https://github.com/omerwe/polyfun. 
-(ii) FINEMAP software is available at http://www.christianbenner.com/#.}
-(iii) Snakemake, https://snakemake.readthedocs.io/en/stable/getting_started/installation.html.
+<ADD HYPERLINKS AND EDIT THE README>
+(i) Polyfun
+(ii) FINEMAP 
+(iii) Snakemake
 You will need to activate the snakemake conda/mamba environment prior to the pipeline execution.
 
 Note that in order to run snakemake pipelines, you should follow one of the two options: 
