@@ -6,7 +6,7 @@ The pipeline is comprised of the following 3 Snakemake modules:
 - running fine-mapping on cleaned GWAS summary statistics
 - merging all independent fine-mapping jobs and processing these
 
-# Prior to pipeline execution, install the following:
+# Dependencies:
 (i) Polyfun (Weissbrod et al., 2020), with installation instructions found in here https://github.com/omerwe/polyfun. 
 (ii) FINEMAP software is available at http://www.christianbenner.com/#.}
 (iii) Snakemake, https://snakemake.readthedocs.io/en/stable/getting_started/installation.html.
