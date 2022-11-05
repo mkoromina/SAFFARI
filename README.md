@@ -11,6 +11,7 @@ The pipeline is comprised of the following 3 Snakemake modules:
 (ii) FINEMAP software is available at http://www.christianbenner.com/#.}
 (iii) Snakemake, https://snakemake.readthedocs.io/en/stable/getting_started/installation.html.
 You will need to activate the snakemake conda/mamba environment prior to the pipeline execution.
+
 Note that in order to run snakemake pipelines, you should follow one of the two options: 
 (a) set up a slurm or lsf profile as in https://github.com/Snakemake-Profiles/slurm or https://github.com/Snakemake-Profiles/lsf which will parallelize job submission and execution, or, (b) run "snakemake -s Snakefile" from within the directory where your Snakefile is stored by using screen sessions.
 
