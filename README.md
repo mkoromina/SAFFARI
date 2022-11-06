@@ -8,9 +8,9 @@ The pipeline is comprised of the following 3 Snakemake modules:
 
 ## Dependencies:
 
-(i) [Polyfun] (https://github.com/omerwe/polyfun)
-(ii) [FINEMAP] (http://www.christianbenner.com/)
-(iii) [Snakemake] (https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
+(i) [Polyfun](https://github.com/omerwe/polyfun)
+(ii) [FINEMAP](http://www.christianbenner.com/)
+(iii) [Snakemake](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
 
 You will need to activate the snakemake conda/mamba environment prior to the pipeline execution.
 Note that in order to run snakemake pipelines, you should follow one of the two options: 
