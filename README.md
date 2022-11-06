@@ -8,15 +8,15 @@ The pipeline is comprised of the following 3 Snakemake modules:
 
 ## Dependencies:
 
-(i) [Polyfun](https://github.com/omerwe/polyfun)
-(ii) [FINEMAP](http://www.christianbenner.com/)
-(iii) [SuSiE](https://github.com/stephenslab/susieR)
-(iv) [Snakemake](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
-(v)*optional* [LDStorev2](http://www.christianbenner.com/#)
+- [Polyfun](https://github.com/omerwe/polyfun)
+- [FINEMAP](http://www.christianbenner.com/)
+- [SuSiE](https://github.com/stephenslab/susieR)
+- [Snakemake](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
+- *optional* [LDStorev2](http://www.christianbenner.com/#)
 
 You will need to activate the snakemake conda/mamba environment prior to the pipeline execution.
 Note that in order to run snakemake pipelines, you should follow one of the two options: 
-(a) set up a slurm or lsf profile as in https://github.com/Snakemake-Profiles/slurm or https://github.com/Snakemake-Profiles/lsf which will parallelize job submission and execution, or, 
-(b) run "snakemake -s Snakefile" from within the directory where your Snakefile is stored by using screen sessions.
+- set up a slurm or lsf profile as in https://github.com/Snakemake-Profiles/slurm or https://github.com/Snakemake-Profiles/lsf which will parallelize job submission and execution, or, 
+- run "snakemake -s Snakefile" from within the directory where your Snakefile is stored by using screen sessions.
 
 ### To add credits
