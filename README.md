@@ -6,12 +6,15 @@ The pipeline is comprised of the following 3 Snakemake modules:
 - running fine-mapping on cleaned GWAS summary statistics
 - merging all independent fine-mapping jobs and processing these
 
-# Dependencies:
+## Dependencies:
 
-(i) Polyfun
-(ii) FINEMAP 
-(iii) Snakemake
+(i) [Polyfun] (https://github.com/omerwe/polyfun)
+(ii) [FINEMAP] (http://www.christianbenner.com/)
+(iii) [Snakemake] (https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
 
-You will need to activate the snakemake conda/mamba environment prior to the pipeline execution. Note that in order to run snakemake pipelines, you should follow one of the two options: (a) set up a slurm or lsf profile as in https://github.com/Snakemake-Profiles/slurm or https://github.com/Snakemake-Profiles/lsf which will parallelize job submission and execution, or, (b) run "snakemake -s Snakefile" from within the directory where your Snakefile is stored by using screen sessions.
+You will need to activate the snakemake conda/mamba environment prior to the pipeline execution.
+Note that in order to run snakemake pipelines, you should follow one of the two options: 
+(a) set up a slurm or lsf profile as in https://github.com/Snakemake-Profiles/slurm or https://github.com/Snakemake-Profiles/lsf which will parallelize job submission and execution, or, 
+(b) run "snakemake -s Snakefile" from within the directory where your Snakefile is stored by using screen sessions.
 
-# To add credits
+### To add credits
