@@ -10,7 +10,9 @@ The pipeline is comprised of the following 3 Snakemake modules:
 
 (i) [Polyfun](https://github.com/omerwe/polyfun)
 (ii) [FINEMAP](http://www.christianbenner.com/)
-(iii) [Snakemake](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
+(iii) [SuSiE](https://github.com/stephenslab/susieR)
+(iv) [Snakemake](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
+(v)*optional* [LDStorev2](http://www.christianbenner.com/#)
 
 You will need to activate the snakemake conda/mamba environment prior to the pipeline execution.
 Note that in order to run snakemake pipelines, you should follow one of the two options: 
