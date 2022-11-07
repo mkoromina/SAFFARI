@@ -1,4 +1,4 @@
-# Fine-mapping pipeline implemented through snakemake
+# Snakemake fine-mapping pipeline
 A comprehensive statistical and functional finemapping pipeline incorporating 4 fine-mapping tools (SuSiE, FINEMAP, Polyfun+SuSiE, Polyfun+FINEMAP), two reference panels (HRC, UKB) and two differential finemapping ranges/windows (3Mb window or windows defined by the LD structure).
 
 The pipeline is comprised of the following 3 Snakemake modules:
