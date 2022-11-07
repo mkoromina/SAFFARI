@@ -39,8 +39,7 @@ test2 <- dat %>%
 
 ##to test the following part as snakemake@output[[binned_loci]]
 
-data %>%
-colSums(test2 !=0) %>%
+data = colSums(test2 !=0) %>% 
 write_tsv(snakemake@output[[binned_loci]])
 
 df_dat2 <- tibble(pip_thres= c(">= 90%", "50-90%", "10-50% ", "<=10%"),
