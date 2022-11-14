@@ -20,3 +20,6 @@ Note that in order to run snakemake pipelines, you should follow one of the two 
 - run *snakemake -s Snakefile* from within the directory where your Snakefile is stored by using screen sessions.
 
 ### To add credits
+This work would not have been feasible without the contribution and wonderful of other researchers such as:
+Omer Weissbrod (Polyfun & PolyPred),
+Jonathan Coleman (tackling fine-mapping issues).
