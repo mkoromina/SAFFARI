@@ -7,6 +7,7 @@ The pipeline is comprised of the following 3 Snakemake modules:
 - merging all independent fine-mapping jobs and processing these
 
 ##TO DO: cleaning of sumstats before hand, tweak MAF field for Ricopili format, merging of result dataframes for future assessment.
+##TO DO: a rule in module fetch_UKB_LD_names as to how we create a top loci file from the xlsx and which columns we keep.
 
 ## Dependencies
 
