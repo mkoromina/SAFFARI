@@ -23,5 +23,5 @@ Note that in order to run snakemake pipelines, you should follow one of the two 
 This work would not have been feasible without the contribution and wonderful of other researchers:
 - Omer Weissbrod (Polyfun & PolyPred),
 - Jonathan Coleman (tackling fine-mapping issues),
-- Ashvin Ravi (tackling fine-mapping issues)
+- Ashvin Ravi (tackling fine-mapping issues),
 - Brian Fulton-Howard (snakemake issues).
