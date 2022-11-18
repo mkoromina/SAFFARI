@@ -6,6 +6,8 @@ The pipeline is comprised of the following 3 Snakemake modules:
 - running fine-mapping on cleaned GWAS summary statistics
 - merging all independent fine-mapping jobs and processing these
 
+##TO DO: cleaning of sumstats before hand, tweak MAF field for Ricopili format, merging of result dataframes for future assessment.
+
 ## Dependencies
 
 - [Polyfun](https://github.com/omerwe/polyfun)
