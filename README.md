@@ -6,7 +6,7 @@ The pipeline is comprised of the following 3 Snakemake modules:
 - running fine-mapping on cleaned GWAS summary statistics
 - merging all independent fine-mapping jobs and processing these
 
-## Dependencies:
+## Dependencies
 
 - [Polyfun](https://github.com/omerwe/polyfun)
 - [FINEMAP](http://www.christianbenner.com/)
