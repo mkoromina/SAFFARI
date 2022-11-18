@@ -19,7 +19,7 @@ Note that in order to run snakemake pipelines, you should follow one of the two 
 - set up a slurm or lsf profile as in https://github.com/Snakemake-Profiles/slurm or https://github.com/Snakemake-Profiles/lsf which will parallelize job submission and execution, or, 
 - run *snakemake -s Snakefile* from within the directory where your Snakefile is stored by using screen sessions.
 
-### To add credits
+## Credits
 This work would not have been feasible without the contribution and wonderful of other researchers:
 - Omer Weissbrod (Polyfun & PolyPred),
 - Jonathan Coleman (tackling fine-mapping issues),
