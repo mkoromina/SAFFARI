@@ -4,5 +4,5 @@ When running each one of these 4 scripts, the corresponding file shall be define
 Order of running snakemake modules: 
 - (1) fetch_UKB_LD_names,
 - (2) fine-mapping (UKB panel),
-- and/or (3) fine-mapping_HRC (HRC panel), 
+- (3) fine-mapping_HRC (HRC panel), 
 - (4) credible_sets.
