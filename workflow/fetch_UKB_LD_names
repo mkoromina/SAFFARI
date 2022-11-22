@@ -1,10 +1,11 @@
-#we need the correct 'names' for the UKB LD matrices of our GWS loci
-#run for each dataset separately until further parallelization
-
 SS = ["suicide_gwas"]  #then daner_bip_pgc3
+##parallelize for multiple datasets
 
 rule all:
         input: expand("resources/{ss}_loci_ranges.tsv", ss = SS)
+
+#rule create_loci_file:
+#fetch the correct columns from the excel clumped file from ricopili
 
 rule import_finemap_loci:
     	input:  expand("resources/{ss}_toploci.csv", ss= SS)
