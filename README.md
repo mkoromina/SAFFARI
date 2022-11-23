@@ -19,6 +19,20 @@ Note that in order to run snakemake pipelines, you should follow one of the two 
 - set up a slurm or lsf profile as in https://github.com/Snakemake-Profiles/slurm or https://github.com/Snakemake-Profiles/lsf which will parallelize job submission and execution, or, 
 - run *snakemake -s Snakefile* from within the directory where your Snakefile is stored by using screen sessions.
 
+
+## Inputs
+
+To run this pipeline with different modules, you will need two main inputs: (i) formatted and cleaned summary GWAS sumstats and (ii) a list of top loci to finemap. GWAS sumstats should be cleaned and include no duplicates. Both the top loci file and the GWS sumstats here include the columns as from [Ricopili](https://sites.google.com/a/broadinstitute.org/ricopili/overview).
+
+#TODO maybe add a rule for for this.
+GWAS columns from Ricopili include:
+CHR SNP BP A1 A2 FRQ_A_41917 FRQ_U_371549 INFO OR SE P ngt Direction HetISqt HetDf HetPVa Nca Nco Neff_half
+(if you need to filter according to the MAF then the FRQ columns shall be renamed)
+
+Top loci file is derived from the Ricopili clumping procedure and should include the minimum fields:
+SNP Chromosome Position Gene Locus range.left range.right
+(Gene, Locus fields can include the same information, range.left and range.right are defined as the 'fine-mapping windows')
+
 ## Credits
 This work would not have been feasible without the contribution and wonderful work of other researchers:
 - Omer Weissbrod (Polyfun & PolyPred),
