@@ -26,7 +26,7 @@ To run this pipeline with different modules, you will need two main inputs: (i) 
 
 #TODO maybe add a rule for for this.
 GWAS columns from Ricopili include:
-- ```CHR```    ```SNP ```    ```BP```    ```A1```    ```A2```    ```FRQ_A_41917```    ```FRQ_U_371549```    ```INFO```    ```OR```    ```SE```    ```P```  ```ngt```    ```Direction```    ```HetISqt```    ```HetDf```    ```HetPVa```   ```Nca```    ```Nco```   ```Neff_half```
+- ```CHR```    ```SNP ```     ```BP```    ```A1```    ```A2```    ```FRQ_A_41917```    ```FRQ_U_371549```    ```INFO```    ```OR```    ```SE```    ```P```  ```ngt```    ```Direction```    ```HetISqt```    ```HetDf```    ```HetPVa```   ```Nca```    ```Nco```   ```Neff_half```
 (if you need to filter according to the MAF then the FRQ columns shall be renamed)
 
 Top loci file is derived from the Ricopili clumping procedure and should include the minimum fields:
