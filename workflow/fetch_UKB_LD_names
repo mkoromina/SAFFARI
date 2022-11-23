@@ -4,9 +4,6 @@ SS = ["suicide_gwas"]  #then daner_bip_pgc3
 rule all:
         input: expand("resources/{ss}_loci_ranges.tsv", ss = SS)
 
-#rule create_loci_file:
-#fetch the correct columns from the excel clumped file from ricopili
-
 rule import_finemap_loci:
     	input:  expand("resources/{ss}_toploci.csv", ss= SS)
     	output: expand("resources/{ss}_loci_ranges.tsv", ss = SS)
