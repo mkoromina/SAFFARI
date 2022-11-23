@@ -22,15 +22,15 @@ Note that in order to run snakemake pipelines, you should follow one of the two 
 
 ## Inputs
 
-To run this pipeline with different modules, you will need two main inputs: (i) formatted and cleaned summary GWAS sumstats ```.gz``` and (ii) a list of top loci to finema (usually stored as a ```.csv```). GWAS sumstats should be cleaned and include no duplicates. Both the top loci file and the GWS sumstats here include the columns as from [Ricopili](https://sites.google.com/a/broadinstitute.org/ricopili/overview).
+To run this pipeline with different modules, you will need two main inputs: (i) formatted and cleaned summary GWAS sumstats ( in a ```.gz``` format) and (ii) a list of top loci to finemap (usually stored as a ```.csv```file). GWAS sumstats should be cleaned and include no duplicates. Both the top loci file and the GWS sumstats here include the columns as from [Ricopili](https://sites.google.com/a/broadinstitute.org/ricopili/overview).
 
 #TODO maybe add a rule for for this.
 GWAS columns from Ricopili include:
-- ```CHR```  ```SNP ```  ```BP```  ```A1```  ```A2```  ```FRQ_A_41917```  ```FRQ_U_371549```  ```INFO```  ```OR```  ```SE```  ```P```  ```ngt```  ```Direction```  ```HetISqt```  ```HetDf```  ```HetPVa```  ```Nca```  ```Nco```  ```Neff_half```
+- ```CHR```    ```SNP ```    ```BP```    ```A1```    ```A2```    ```FRQ_A_41917```    ```FRQ_U_371549```    ```INFO```    ```OR```    ```SE```    ```P```  ```ngt```    ```Direction```    ```HetISqt```    ```HetDf```    ```HetPVa```   ```Nca```    ```Nco```   ```Neff_half```
 (if you need to filter according to the MAF then the FRQ columns shall be renamed)
 
 Top loci file is derived from the Ricopili clumping procedure and should include the minimum fields:
-- ```SNP```  ```Chromosome```  ```Position```  ```Gene```  ```Locus```  ```range.left```  ```range.right```
+- ```SNP```    ```Chromosome```    ```Position```    ```Gene```    ```Locus```    ```range.left```    ```range.right```
 (Gene, Locus fields can include the same information, range.left and range.right are defined as the 'fine-mapping windows')
 
 ## Credits
