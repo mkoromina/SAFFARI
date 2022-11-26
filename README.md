@@ -35,7 +35,7 @@ Top loci file is derived from the Ricopili clumping procedure and should include
 
 ## Credits
 This work would not have been feasible without the contribution and wonderful work of other researchers:
-- Omer Weissbrod (Polyfun & PolyPred),
-- Jonathan Coleman (tackling fine-mapping issues),
-- Ashvin Ravi (tackling fine-mapping issues),
-- Brian Fulton-Howard (snakemake issues).
+- Omer Weissbrod,
+- Jonathan Coleman,
+- Ashvin Ravi,
+- Brian Fulton-Howard.
