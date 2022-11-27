@@ -11,12 +11,11 @@ rule_all:
     	expand("output/{ss}_credible_sets.tsv", ss = SS),
 	expand("output/{ss}_binned_loci.tsv", ss = SS)
 
-
 rule process_CSs_PIPs:
-    	input: 
-		loci = expand("output/{ss}_toploci.csv", ss= SS)
-    	output: 
-		CS = expand("output/{ss}_credible_sets.tsv", ss = SS),
-		binned_loci = expand("output/{ss}_binned_loci.tsv", ss = SS)
-    	conda: "envs/r.yaml"
-    	script: "scripts/credible_sets.R"
+    input: 
+	loci = expand("output/{ss}_toploci.csv", ss= SS)
+    output: 
+	CS = expand("output/{ss}_credible_sets.tsv", ss = SS),
+	binned_loci = expand("output/{ss}_binned_loci.tsv", ss = SS)
+    conda: "envs/r.yaml"
+    script: "scripts/credible_sets.R"
