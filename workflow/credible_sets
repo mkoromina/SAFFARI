@@ -5,7 +5,6 @@ import pandas as pd
 #wildcard here will be the prefix of the .tsv files for a certain cohort
 SS = ["cohort_polyfun_susie_all", "cohort_polyfun_finemap_all", "cohort_only_susie_all", "cohort_only_finemap_all"]  
 
-
 rule_all:
     input:
     	expand("output/{ss}_credible_sets.tsv", ss = SS),
@@ -19,3 +18,4 @@ rule process_CSs_PIPs:
 	binned_loci = expand("output/{ss}_binned_loci.tsv", ss = SS)
     conda: "envs/r.yaml"
     script: "scripts/credible_sets.R"
+    
