@@ -40,3 +40,8 @@ This work would not have been feasible without the contribution and wonderful wo
 - Ashvin Ravi,
 - Brian Fulton-Howard,
 - Brian Schilder.
+
+
+## Issues with the pipeline
+Shall any issues occur, please feel free to open them by providing a mini reproducible example.
+Contributions are also more than welcome.
