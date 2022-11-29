@@ -24,7 +24,7 @@ Note that in order to run snakemake pipelines, you should follow one of the two 
 
 To run this pipeline with different modules, you will need two main inputs: (i) formatted and cleaned summary GWAS sumstats ( in a ```.gz``` format) and (ii) a list of top loci to finemap (usually stored as a ```.csv```file). GWAS sumstats should be cleaned and include no duplicates. Both the top loci file and the GWS sumstats here include the columns as outputted from [Ricopili](https://sites.google.com/a/broadinstitute.org/ricopili/overview).
 
-#TODO maybe add a rule for for this.
+Future impovements include creating rules for GWAS sumstats processing and creating the top loci file. In the meantime, GWAS sumstats from Ricopili are accepted as input.
 GWAS columns from Ricopili include:
 - ```CHR```    ```SNP```     ```BP```    ```A1```    ```A2```    ```FRQ_A_41917```    ```FRQ_U_371549```    ```INFO```    ```OR```    ```SE```    ```P```  ```ngt```    ```Direction```    ```HetISqt```    ```HetDf```    ```HetPVa```   ```Nca```    ```Nco```   ```Neff_half```
 (if you need to filter according to the MAF then the FRQ columns shall be renamed)
@@ -42,6 +42,6 @@ This work would not have been feasible without the contribution and wonderful wo
 - Brian Schilder.
 
 
-## Issues with the pipeline
-Shall any issues occur, please feel free to open them by providing a mini reproducible example.
+## Issues 
+Shall any issues occur when running the pipeline, please feel free to open them by providing a mini reproducible example.
 Contributions are also more than welcome.
