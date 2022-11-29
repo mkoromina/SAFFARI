@@ -2,20 +2,27 @@
 from numpy import expand_dims
 import pandas as pd
 
-#wildcard here will be the prefix of the .tsv files for a certain cohort
-SS = ["cohort_polyfun_susie_all", "cohort_polyfun_finemap_all", "cohort_only_susie_all", "cohort_only_finemap_all"]  
+##the wildcards here are the name of merged dfs for which the LOCUS finemapped (per SNP) is also noted.
+SS = ["daner_bip_pgc3_polyfun_susie_all", "daner_bip_pgc3_polyfun_finemap_all", "daner_bip_pgc3_only_susie_all", "daner_bip_pgc3_only_finemap_all"]
 
-rule_all:
-    input:
-    	expand("output/{ss}_credible_sets.tsv", ss = SS),
-	expand("output/{ss}_binned_loci.tsv", ss = SS)
+rule all:
+ 	input:
+ 	 	expand("output/{ss}_credible_sets.tsv", ss = SS)
+		expand("output/{ss}_binned_loci.tsv", ss = SS)
+
+##need to add an extra rule and create merged df within an extra LOCUS column
 
 rule process_CSs_PIPs:
-    input: 
-	loci = expand("output/{ss}_toploci.csv", ss= SS)
-    output: 
-	CS = expand("output/{ss}_credible_sets.tsv", ss = SS),
-	binned_loci = expand("output/{ss}_binned_loci.tsv", ss = SS)
-    conda: "envs/r.yaml"
-    script: "scripts/credible_sets.R"
-    
+	input: expand("output/{ss}.csv", ss= SS)
+	output: expand("output/{ss}_credible_sets.tsv", ss = SS),
+	conda: "envs/r.yaml"
+	resources: mem_mb = 20000
+	script: "scripts/credible_sets.R"
+
+
+rule binned_loci:
+	input: expand("output/{ss}.csv", ss= SS)
+	output:  expand("output/{ss}_binned_loci.tsv", ss = SS)
+	conda: "envs/r.yaml"
+	resources: mem_mb = 20000
+	script: "scripts/binned_loci.R"
