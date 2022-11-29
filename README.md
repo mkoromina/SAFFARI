@@ -44,5 +44,5 @@ This work would not have been feasible without the contribution and wonderful wo
 
 
 ## Issues 
-Shall any issues occur when running the pipeline, please feel free to open them by providing a mini reproducible example.
+Shall any issues occur when running the pipeline, please feel free to list them down by providing a mini reproducible example.
 Contributions are also more than welcome.
