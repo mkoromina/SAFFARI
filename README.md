@@ -4,7 +4,7 @@ A comprehensive statistical and functional finemapping pipeline incorporating 4 
 The pipeline is comprised of the following 3 Snakemake modules:
 - fetching the correct UKB LD matrix name for each GWS locus 
 - running fine-mapping on cleaned GWAS summary statistics
-- merging all independent fine-mapping jobs and processing these
+- merging all independent fine-mapping jobs and processing the derived files.
 
 ## Dependencies
 
