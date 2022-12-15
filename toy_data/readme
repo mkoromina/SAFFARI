@@ -1,5 +1,5 @@
-This directory includes toy data to run the fine-mapping pipeline. GWAS sumstats cna be downloaded from [here](https://pgc.unc.edu/for-researchers/download-results/)
-and the top loci files is attached.
+This directory includes toy data to run the fine-mapping pipeline. GWAS sumstats can be downloaded from (https://pgc.unc.edu/for-researchers/download-results/)
+and the top loci files is attached herein.
 All data were retrieved from
 [Mullins, N., Forstner, A.J., O’Connell, K.S. et al. 
 Genome-wide association study of more than 40,000 bipolar disorder cases provides new insights into the underlying biology. 
