@@ -17,7 +17,7 @@ The pipeline is comprised of the following 3 Snakemake modules:
 You will need to activate the snakemake conda/mamba environment prior to the pipeline execution.
 Note that in order to run snakemake pipelines, you should follow one of the two options: 
 - set up a slurm or lsf profile as in https://github.com/Snakemake-Profiles/slurm or https://github.com/Snakemake-Profiles/lsf which will parallelize job submission and execution, or, 
-- run *snakemake -s Snakefile* from within the directory where your Snakefile is stored by using screen sessions.
+- run *snakemake -s Snakefile* from within the directory, in which your Snakefile is stored, by using screen sessions in your local cluster. In this case, make sure that you add the ```use-conda``` flag in you command.
 
 
 ## Inputs
