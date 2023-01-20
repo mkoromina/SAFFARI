@@ -2,7 +2,7 @@
 from numpy import expand_dims
 import pandas as pd
 
-##the wildcards here are the name of merged dfs for which the LOCUS finemapped (per SNP) is also noted.
+##the wildcards here are the name of merged dataframes for which the LOCUS finemapped (per SNP) is also noted.
 SS = ["daner_bip_pgc3_polyfun_susie_all", "daner_bip_pgc3_polyfun_finemap_all", "daner_bip_pgc3_only_susie_all", "daner_bip_pgc3_only_finemap_all"]
 
 rule all:
