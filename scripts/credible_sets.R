@@ -1,12 +1,12 @@
 #the input here is a merged matrix of all fine-mapping jobs (per method!) for all loci.
-#make sure to create beforehand a 'LOCUS' column to denote in which locus the fine mapped SNP was found within.
+#make sure to create beforehand a 'LOCUS' column to denote in which locus the fine-mapped SNP was found within.
 
 library(dplyr)
 library(tidyverse)
 library(purrr)
 library(ggplot2)
 
-##Count the size of CSs from a merged finemapping .tsv file
+##Count the size of CSs from a merged finemapping .csv file. 
 dat <- read_csv(snakemake@input[[1]]) %>%
   janitor::clean_names()
 
