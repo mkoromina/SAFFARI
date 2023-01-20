@@ -12,7 +12,7 @@ The pipeline is comprised of the following 3 Snakemake modules:
 - [FINEMAP](http://www.christianbenner.com/)
 - [SuSiE](https://github.com/stephenslab/susieR)
 - [Snakemake](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
-- [LDStorev2](http://www.christianbenner.com/#) *optional* 
+- [LDStorev2](http://www.christianbenner.com/#) (*optional*) 
 
 You will need to activate the snakemake conda/mamba environment prior to the pipeline execution.
 Note that in order to run snakemake pipelines, you should follow one of the two options: 
