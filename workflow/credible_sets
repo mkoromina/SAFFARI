@@ -10,7 +10,7 @@ rule all:
  	 	expand("output/{ss}_credible_sets.tsv", ss = SS)
 		expand("output/{ss}_binned_loci.tsv", ss = SS)
 
-##need to add an extra rule and create merged df within an extra LOCUS column
+##need to add an extra rule and create merged df with an extra LOCUS column
 
 rule process_CSs_PIPs:
 	input: expand("output/{ss}.csv", ss= SS)
