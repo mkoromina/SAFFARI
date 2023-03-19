@@ -1,10 +1,6 @@
-#munging the stats via polyfun, running 4 fine-mapping methods, merging the results into 4 output files.
+#change params (files names, top loci and Neff accordingly)
 
-#from ossaudiodev import SNDCTL_DSP_SUBDIVIDE
-from numpy import expand_dims
-import pandas as pd
-
-SS = ["daner_bip_pgc3"]  #change params (files names, top loci and Neff accordingly)
+SS = ["daner_bip_pgc3"]  
 CHR = list(range(1,23))
 
 LD_UKB_ranges= pd.read_table("resources/daner_bip_pgc3_loci_ranges.tsv", sep='\t', dtype=str).set_index("SNP", drop=False)
