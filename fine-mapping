@@ -1,4 +1,5 @@
 #change params (files names, top loci and Neff accordingly)
+import pandas as pd
 
 SS = ["daner_bip_pgc3"]  
 CHR = list(range(1,23))
@@ -28,7 +29,7 @@ rule munge_polyfun:
       	resources: mem_mb= 20000
       	shell:
       		"""
-      		python /sc/arion/projects/psychgen/software/polyfun/munge_polyfun_sumstats.py \
+      		python polyfun/munge_polyfun_sumstats.py \
       		--sumstats {input} \
       		--out {output} \
       		--min-info 0.6 \
@@ -49,14 +50,14 @@ rule l2reg_sldsc:
         resources: mem_mb = 170000
       	shell:
       		"""
-      		python /sc/arion/projects/psychgen/software/polyfun/polyfun.py \
+      		python polyfun/polyfun.py \
           		--compute-h2-L2 \
           		--no-partitions \
           		--output-prefix {params.prefix} \
           		--sumstats {input.gwas} \
   	   			--allow-missing \
-          		--ref-ld-chr /sc/arion/projects/ad-omics/ashvin/UKBB_priors/hg19_baselineLF2.2.UKB{params.ldscores} \
-      			--w-ld-chr /sc/arion/projects/ad-omics/ashvin/UKBB_priors/hg19_baselineLF2.2.UKB{params.weights}
+          		--ref-ld-chr /sc/arion/projects/ad-omics/ashvin/finemapping/UKBB_priors/hg19_baselineLF2.2.UKB{params.ldscores} \
+      			--w-ld-chr /sc/arion/projects/ad-omics/ashvin/finemapping/UKBB_priors/hg19_baselineLF2.2.UKB{params.weights}
       		"""
 
 rule run_polyfun_susie:
@@ -74,9 +75,9 @@ rule run_polyfun_susie:
 	resources: mem_mb= 32000
  	shell: 
  		"""
- 		python /sc/arion/projects/psychgen/software/polyfun/finemapper.py \
+ 		python polyfun/finemapper.py \
  		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
- 		--sumstats /sc/arion/projects/psychgen/bipolar/sandbox/output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
+ 		--sumstats output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
  		--n 101962 \
  		--chr {params.chrom} \
  		--start {params.start} \
@@ -110,15 +111,15 @@ rule run_polyfun_finemap:
 	resources: mem_mb= 32000
   	shell: 
   		"""
-  		python /sc/arion/projects/psychgen/software/polyfun/finemapper.py \
+  		python polyfun/finemapper.py \
   		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
-  		--sumstats /sc/arion/projects/psychgen/bipolar/sandbox/output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
+  		--sumstats output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
   		--n 101962 \
   		--chr {params.chrom} \
   		--start {params.start} \
   		--end {params.end} \
   		--method finemap \
- 		--finemap-exe /sc/arion/projects/psychgen/software/finemap_v1.4_x86_64/finemap_v1.4_x86_64 \
+ 		--finemap-exe /hpc/packages/minerva-centos7/finemap/1.4/finemap_v1.4_x86_64/finemap_v1.4_x86_64 \
   		--max-num-causal 5 \
   		--out {output.output} \
   		--allow-missing
@@ -147,15 +148,15 @@ rule run_only_finemap:
 	resources: mem_mb = 32000
  	shell: 
  		"""
- 		python /sc/arion/projects/psychgen/software/polyfun/finemapper.py \
+ 		python polyfun/finemapper.py \
  		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
- 		--sumstats /sc/arion/projects/psychgen/bipolar/sandbox/output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
+ 		--sumstats output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
  		--n 101962 \
  		--chr {params.chrom} \
  		--start {params.start} \
  		--end {params.end} \
  		--method finemap \
-		--finemap-exe /sc/arion/projects/psychgen/software/finemap_v1.4_x86_64/finemap_v1.4_x86_64 \
+		--finemap-exe /hpc/packages/minerva-centos7/finemap/1.4/finemap_v1.4_x86_64/finemap_v1.4_x86_64 \
 		--non-funct \
  		--max-num-causal 5 \
  		--out {output.output} \
@@ -186,9 +187,9 @@ rule run_only_susie:
 	resources: mem_mb = 32000
  	shell: 
  		"""
- 		python /sc/arion/projects/psychgen/software/polyfun/finemapper.py \
+ 		python polyfun/finemapper.py \
  		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
- 		--sumstats /sc/arion/projects/psychgen/bipolar/sandbox/output/priors_pgc3_bip/daner_pgc3_bip_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
+ 		--sumstats output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
  		--n 101962 \
  		--chr {params.chrom} \
  		--start {params.start} \
