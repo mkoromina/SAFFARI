@@ -1,2 +1,5 @@
 summary_stats_prefix:
-  - daner_bip_pgc3 
+  - Bellenguez_2021_hg19
+mode:
+  - GWAS 
+top_loci_file:

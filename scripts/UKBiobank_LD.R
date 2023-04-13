@@ -3,6 +3,9 @@
 library(readr)
 library(purrr)
 library(dplyr)
+library(readxl)
+library(tools)
+library(yaml)
 
 ######################################################################################################
 #### Functions from echolocatoR ####
@@ -80,14 +83,53 @@ LD.UKB_find_ld_prefix <- function(chrom, min_pos) {
 ######################################################################################################
 ######################################################################################################
 
+config = yaml.load_file("config.yaml")
+gwas <- config$summary_stats_prefix
+print(config)
 
-loci <- read_csv(snakemake@input[[1]])
+if (file_ext(snakemake@input[[1]]) != 'xlsx') {
+  loci <- read_csv(snakemake@input[[1]])
+
+} else {
+  excel_sheet <- readxl::read_excel("/sc/arion/projects/ad-omics/data/references//GWAS/GWAS-QTL_data_dictionary.xlsx", sheet = 3)
+  gwas_row <- excel_sheet[excel_sheet$dataset == gwas,]
+  if (file_ext(gwas_row) == 'xlsx') {
+    top_loci_file <- readxl::read_excel(gwas_row$top_path)
+  } else {
+    top_loci_file <- read_tsv(gwas_row$top_path)
+    position <- gwas_row$top_pos
+    top_loci_file <- top_loci_file %>% select(c(gwas_row$top_chrom, gwas_row$top_pos, gwas_row$top_snp, gwas_row$top_locus))
+    colnames(top_loci_file) <- c('chrom', 'BP', 'SNP', 'locus')
+    top_loci_file$loci_start <- top_loci_file$BP - 1000000
+    top_loci_file$loci_end <- top_loci_file$BP + 1000000
+    loci = top_loci_file
+    colnames(loci) <- c('CHR', 'BP', 'SNP', 'locus', 'loci_start', 'loci_end')
+
+  } 
+}
+
+
 
 mapped <- map2_dfr(loci$CHR, loci$BP, LD.UKB_find_ld_prefix)
 
-loci %>%
-  select(-starts_with("..")) %>%
-  bind_cols(mapped) %>%
-  tidyr::unite(chrom, beginning, end, col = "file", remove = F) %>%
-  select(chrom_orig = CHR, chrom, BP, beginning, end, file, everything()) %>%
-  write_tsv(snakemake@output[[1]])
+
+# print(head(mapped))
+
+if (file_ext(snakemake@input[[1]]) != 'xlsx') {
+  loci %>%
+    select(-starts_with("..")) %>%
+    bind_cols(mapped) %>%
+    tidyr::unite(chrom, beginning, end, col = "file", remove = F) %>%
+    select(chrom_orig = CHR, chrom, BP, beginning, end, file, everything()) %>%
+    write_tsv(snakemake@output[[1]])
+} else {
+  loci <- cbind(loci, mapped)
+  colnames(loci) = c('CHR', 'BP', 'RSID', 'locus', 'locus_start', 'locus_end', 'chrom', 'beginning', 'end')
+  # loci <- loci[, -c(5,6)]
+  print(head(loci))
+  # loci <- select(loci, -c(loc_begin, loc_end))  
+  loci$beginning <- as.numeric(loci$beginning)
+  loci$end <- as.numeric(loci$end)
+  
+  write_tsv(loci, snakemake@output[[1]])
+}

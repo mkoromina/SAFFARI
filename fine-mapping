@@ -1,7 +1,7 @@
 #change params (files names, top loci and Neff accordingly)
 import pandas as pd
 
-SS = ["daner_bip_pgc3"]  
+SS = config["summary_stats_prefix"] 
 CHR = list(range(1,23))
 
 LD_UKB_ranges= pd.read_table("resources/daner_bip_pgc3_loci_ranges.tsv", sep='\t', dtype=str).set_index("SNP", drop=False)

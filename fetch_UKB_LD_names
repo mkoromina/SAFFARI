@@ -1,14 +1,31 @@
 import pandas as pd
 
 SS = config["summary_stats_prefix"]  #then daner_bip_pgc3
+mode = config["mode"]
+# functional_finemapping = config["functional_finemapping"]
 ##parallelize for multiple datasets SS="(suicide_gwas|daner_bip_pgc3)"
 
+gwas_df = pd.read_excel("/sc/arion/projects/ad-omics/data/references/GWAS/GWAS-QTL_data_dictionary.xlsx", sheet_name = 2)
+qtl_df = pd.read_excel("/sc/arion/projects/ad-omics/data/references/GWAS/GWAS-QTL_data_dictionary.xlsx", sheet_name = 1)
+
+
+top_loci_file = list()
+
+if config['top_loci_file']:
+	top_loci_file.append(config['top_loci_file'])
+else: 
+	top_loci_file.append("/sc/arion/projects/ad-omics/data/references/GWAS/GWAS-QTL_data_dictionary.xlsx")
+
+print(top_loci_file)
+
 rule all:
-        input: expand("resources/{ss}_loci_ranges.tsv", ss = SS)
+    	input: expand("resources/{ss}_loci_ranges.tsv", ss = SS)
+
+# top_loci_file = 'decoy.tsv'
 
 rule import_finemap_loci:
-    	input:  expand("resources/{ss}_toploci.csv", ss= SS)
+    	input: top_loci_file
     	output: expand("resources/{ss}_loci_ranges.tsv", ss = SS)
     	conda: "envs/r.yaml"
-        resources: mem_mb = 10000
+    	resources: mem_mb = 10000
     	script: "scripts/UKBiobank_LD.R"
