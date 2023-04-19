@@ -17,12 +17,12 @@ The pipeline is comprised of the following 3 Snakemake modules:
 You will need to activate the snakemake conda/mamba environment prior to the pipeline execution. Make sure to also follow the directory structures as found in the github page (scripts, resources, workflow, envs).
 Note that in order to run snakemake pipelines, you should follow one of the two options: 
 - set up a slurm or lsf profile as in https://github.com/Snakemake-Profiles/slurm or https://github.com/Snakemake-Profiles/lsf which will parallelize job submission and execution. The pipeline's modules can then be run by ```snakemake --profile lsf```.
-- run ```snakemake -s Snakefile``` from within the directory, in which your Snakefile is stored, by using screen sessions in your local cluster. In this case, make sure that you add the ```--use-conda``` flag in you command.
+- run ```snakemake -s Snakefile``` from within the directory, in which your Snakefile is stored, by using screen sessions in your local cluster. In this case, make sure that you add the ```--use-conda``` flag in your command.
 
 
 ## Inputs
 
-To run this Snakemake pipeline with the different modules, you will need two main inputs: (i) formatted and cleaned GWAS summary sumstats ( in a ```.gz``` format) and (ii) a list of top loci to finemap (usually stored as a ```.csv```file). GWAS sumstats should be cleaned and any duplicate SNPs shall be removed beforehand. Both the top loci file and the GWAS sumstats should include the columns as outputted from [Ricopili](https://sites.google.com/a/broadinstitute.org/ricopili/overview).
+To run this Snakemake pipeline with the different "modules", you will need two main inputs: (i) formatted and cleaned GWAS summary sumstats ( in a ```.gz``` format) and (ii) a list of top loci to finemap (usually stored as a ```.csv```file). GWAS sumstats should be cleaned and any duplicate SNPs shall be removed beforehand. Both the top loci file and the GWAS sumstats should include the columns as outputted from [Ricopili](https://sites.google.com/a/broadinstitute.org/ricopili/overview).
 
 Future impovements in the pipeline include creating rules for GWAS sumstats processing and creating the top loci file. In the meantime, GWAS sumstats from Ricopili are accepted as input.
 
