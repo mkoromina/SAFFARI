@@ -34,6 +34,8 @@ Top loci file is derived from the Ricopili clumping procedure and should include
 - ```SNP```    ```Chromosome```    ```Position```    ```Gene```    ```Locus```    ```range.left```    ```range.right```
 (Gene, Locus fields can include the same information, range.left and range.right are defined as the 'fine-mapping windows')
 
+Annotations (baseline LF2.2 model) for estimating the functional priors (rule l2reg_sldsc) can be downloaded from [here](https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/baselineLF_v2.2.UKB.tar.gz). Precomputed UKB LD matrices (Alkes Price group) can be downloaded from an [Amazon S3 bucket]  (s3://broad-alkesgroup-ukbb-ld/UKBB_LD/).
+
 ## Credits
 This work would not have been feasible without the contribution and wonderful work of other researchers:
 - Omer Weissbrod,
