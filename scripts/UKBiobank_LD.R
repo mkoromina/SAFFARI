@@ -112,9 +112,6 @@ if (file_ext(snakemake@input[[1]]) != 'xlsx') {
 
 mapped <- map2_dfr(loci$CHR, loci$BP, LD.UKB_find_ld_prefix)
 
-
-# print(head(mapped))
-
 if (file_ext(snakemake@input[[1]]) != 'xlsx') {
   loci %>%
     select(-starts_with("..")) %>%
@@ -123,8 +120,10 @@ if (file_ext(snakemake@input[[1]]) != 'xlsx') {
     select(chrom_orig = CHR, chrom, BP, beginning, end, file, everything()) %>%
     write_tsv(snakemake@output[[1]])
 } else {
-  loci <- cbind(loci, mapped)
-  colnames(loci) = c('CHR', 'BP', 'RSID', 'locus', 'locus_start', 'locus_end', 'chrom', 'beginning', 'end')
+  m <- mapped %>% tidyr::unite(chrom, beginning, end, col = "file", remove = F)
+  # print(head(m))
+  loci <- cbind(loci, m)
+  colnames(loci) = c('CHR', 'BP', 'RSID', 'locus', 'locus_start', 'locus_end', 'file', 'chrom', 'beginning', 'end')
   # loci <- loci[, -c(5,6)]
   print(head(loci))
   # loci <- select(loci, -c(loc_begin, loc_end))  

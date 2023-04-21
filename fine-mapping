@@ -4,14 +4,30 @@ import pandas as pd
 SS = config["summary_stats_prefix"] 
 CHR = list(range(1,23))
 
-LD_UKB_ranges= pd.read_table("resources/daner_bip_pgc3_loci_ranges.tsv", sep='\t', dtype=str).set_index("SNP", drop=False)
+LD_UKB_ranges = pd.read_table("resources/Bellenguez_2021_hg19_loci_ranges.tsv", sep='\t', dtype=str).set_index("locus", drop=False)
 SNP = list(LD_UKB_ranges.index)
 
+gwas_df = pd.read_excel("/sc/arion/projects/ad-omics/data/references/GWAS/GWAS-QTL_data_dictionary.xlsx", sheet_name = 2)
+qtl_df = pd.read_excel("/sc/arion/projects/ad-omics/data/references/GWAS/GWAS-QTL_data_dictionary.xlsx", sheet_name = 1)
+
+print(gwas_df["dataset"])
+
+# print(str1)
+
+str1 = ''
+for s in SS:
+	str1 += s
+
+gwas_df = gwas_df[gwas_df["dataset"] == str1]
+print(gwas_df)
+full_sumstats = gwas_df['full_processed_path']
+print(full_sumstats)
+print(full_sumstats)
 rule all:
  	input:
  	 	expand("output/{ss}_neff.munged.parquet", ss = SS),
- 	 	expand("output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", chr = CHR),
- 	 	expand("output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{chr}.snpvar_ridge.gz", chr = CHR),
+ 	 	expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR),
+ 	 	expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge.gz", ss = SS, chr = CHR),
  		expand("output/polyfun_susie_UKB_finemap/{ss}_finemap.{snp}.gz", ss = SS, snp = LD_UKB_ranges.index.tolist()),
  		expand("output/polyfun_susie_UKB_finemap/{ss}_polyfun_susie_all.txt.gz", ss = SS),
 		expand("output/polyfun_finemap_UKB_finemap/{ss}_finemap_finemap.{snp}.gz", ss = SS, snp = LD_UKB_ranges.index.tolist()),
@@ -23,8 +39,8 @@ rule all:
 
 
 rule munge_polyfun:
-      	input:  "resources/{ss}.gz" 
-      	output: "output/{ss}_neff.munged.parquet"
+      	input:  full_sumstats
+      	output: "output/{SS}_neff.munged.parquet"
       	conda: "envs/polyfun.yml"
       	resources: mem_mb= 20000
       	shell:
@@ -38,14 +54,14 @@ rule munge_polyfun:
 
 rule l2reg_sldsc: 
       	input: 
-      		gwas = "output/daner_bip_pgc3_neff.munged.parquet"
+      		gwas = expand("output/{{ss}}_neff.munged.parquet", ss = SS)
       	output: 
-      		output1 = expand("output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{chr}.snpvar_ridge.gz", chr = CHR),
-      		output2 = expand("output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", chr = CHR) 
+      		output1 = expand("output/{{ss}}/priors/{{ss}}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR),
+      		output2 = expand("output/{{ss}}/priors/{{ss}}_l2-ldsc.{chr}.snpvar_ridge.gz", ss = SS, chr = CHR) 
       	params:
       		weights = "/weights.UKB.",
       		ldscores = "/baselineLF2.2.UKB.",
-      		prefix = "output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc"
+      		prefix = expand("output/{{ss}}/priors/{{ss}}_l2-ldsc", ss = SS)
       	conda: "envs/polyfun.yml"
         resources: mem_mb = 170000
       	shell:
@@ -62,22 +78,22 @@ rule l2reg_sldsc:
 
 rule run_polyfun_susie:
  	input:
- 	    snpvar = expand("output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", chr = CHR)
+ 	    snpvar = expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR)
  	output:
- 		output = expand("output/polyfun_susie_UKB_finemap/{{ss}}_finemap.{{snp}}.gz", snp = LD_UKB_ranges.index.tolist())
+ 		output = expand("output/polyfun_susie_UKB_finemap/{{ss}}_finemap.{{snp}}.gz", ss = SS, snp = LD_UKB_ranges.index.tolist())
  	params:
- 	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['chrom_orig'],
+ 	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['CHR'],
  		pos = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['BP'],
- 		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.left'],
- 		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.right'],
-		ld_ranges = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['file'] 
+ 		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['locus_start'],
+ 		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['locus_end'],
+		ld_ranges = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['file']
  	conda: "envs/polyfun.yml"
 	resources: mem_mb= 32000
  	shell: 
  		"""
  		python polyfun/finemapper.py \
  		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
- 		--sumstats output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
+ 		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
  		--n 101962 \
  		--chr {params.chrom} \
  		--start {params.start} \
@@ -98,14 +114,14 @@ rule merge_finemapping_jobs_polysusie:
 
 rule run_polyfun_finemap:
   	input:
-  	    snpvar = expand("output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", chr = CHR)
+  	    snpvar = expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR)
   	output:
   		output = expand("output/polyfun_finemap_UKB_finemap/{{ss}}_finemap_finemap.{{snp}}.gz", snp = LD_UKB_ranges.index.tolist())
   	params:
-  	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['chrom_orig'],
+  	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['CHR'],
   		pos = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['BP'],
-  		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.left'],
-  		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.right'],
+  		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['locus_start'],
+  		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['locus_end'],
  		ld_ranges = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['file'] 
   	conda: "envs/polyfun.yml"
 	resources: mem_mb= 32000
@@ -113,7 +129,7 @@ rule run_polyfun_finemap:
   		"""
   		python polyfun/finemapper.py \
   		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
-  		--sumstats output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
+  		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
   		--n 101962 \
   		--chr {params.chrom} \
   		--start {params.start} \
@@ -135,14 +151,14 @@ rule merge_finemapping_jobs_polyfinemap:
 
 rule run_only_finemap:
  	input:
- 	    snpvar = expand("output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", chr = CHR)
+ 	    snpvar = expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR)
  	output:
  		output = expand("output/only_finemap_UKB_finemap/{{ss}}_only_finemap.{{snp}}.gz", snp = LD_UKB_ranges.index.tolist())
  	params:
- 	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['chrom_orig'],
+ 	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['CHR'],
  		pos = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['BP'],
- 		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.left'],
- 		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.right'],
+ 		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['locus_start'],
+ 		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['locus_end'],
 		ld_ranges = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['file'] 
  	conda: "envs/polyfun.yml"
 	resources: mem_mb = 32000
@@ -150,7 +166,7 @@ rule run_only_finemap:
  		"""
  		python polyfun/finemapper.py \
  		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
- 		--sumstats output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
+ 		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
  		--n 101962 \
  		--chr {params.chrom} \
  		--start {params.start} \
@@ -174,14 +190,14 @@ rule merge_finemapping_jobs_onlyfinemap:
 
 rule run_only_susie:
  	input:
- 	    snpvar = expand("output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", chr = CHR)
+ 	    snpvar = expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR)
  	output:
  		output = expand("output/only_susie_UKB_finemap/{{ss}}_only_susie.{{snp}}.gz", snp = LD_UKB_ranges.index.tolist())
  	params:
- 	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['chrom_orig'],
+ 	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['CHR'],
  		pos = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['BP'],
- 		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.left'],
- 		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.right'],
+ 		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['locus_start'],
+ 		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['locus_end'],
 		ld_ranges = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['file'] 
  	conda: "envs/polyfun.yml"
 	resources: mem_mb = 32000
@@ -189,7 +205,7 @@ rule run_only_susie:
  		"""
  		python polyfun/finemapper.py \
  		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
- 		--sumstats output/priors_pgc3_bip/daner_bip_pgc3_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
+ 		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
  		--n 101962 \
  		--chr {params.chrom} \
  		--start {params.start} \
