@@ -1,16 +1,42 @@
-#from ossaudiodev import SNDCTL_DSP_SUBDIVIDE
+##this module can be run for one approach (one LD ref panel and one fine-mapping range each time) until further parallelization
+##demo case here for HRC + finemapping windows 
+
+
 from numpy import expand_dims
 import pandas as pd
 
-##the wildcards here are the name of merged dataframes for which the LOCUS finemapped (per SNP) is also noted.
-SS = ["daner_bip_pgc3_polyfun_susie_all", "daner_bip_pgc3_polyfun_finemap_all", "daner_bip_pgc3_only_susie_all", "daner_bip_pgc3_only_finemap_all"]
+dat = ["daner_bip_pgc3", "suicide_gwas"]
+SS = ["polyfun_finemap_merged", "polyfun_susie_merged", "only_finemap_merged", "only_susie_merged"]
 
 rule all:
  	input:
- 	 	expand("output/{ss}_credible_sets.tsv", ss = SS)
-		expand("output/{ss}_binned_loci.tsv", ss = SS)
+ 	 	expand("{params.param1}/{dat}_{ss}.csv", dat = dat, ss = SS),
+		expand("{params.param2}/{dat}_{ss}.csv", dat = dat, ss = SS),
+		expand("{params.param3}/{dat}_{ss}.csv", dat = dat, ss = SS),
+		expand("{params.param4}/{dat}_{ss}.csv", dat = dat, ss = SS),
+		expand("output/{dat}_{ss}_credible_sets.tsv", ss = SS),
+		expand("output/{dat}_{ss}_binned_loci.tsv", ss = SS)
+		
+	params: 
+		param1= "output/only_susie_HRC_finemap/", 
+		param2 = "output/only_finemap_HRC_finemap/"
+		param3 = "output/polyfun_susie_HRC_finemap/"
+		param4 = "output/polyfun_finemap_HRC_finemap/"
 
-##need to add an extra rule and create merged df with an extra LOCUS column
+rule merge_loci:
+	output: 
+		out1 = expand("{params.param1}/{dat}_{ss}.csv", dat = dat, ss = SS),
+		out2 = expand("{params.param2}/{dat}_{ss}.csv", dat = dat, ss = SS),
+		out3 = expand("{params.param3}/{dat}_{ss}.csv", dat = dat, ss = SS),
+		out4 = expand("{params.param4}/{dat}_{ss}.csv", dat = dat, ss = SS)
+	params: 
+		param1= "output/only_susie_HRC_finemap/", 
+		param2 = "output/only_finemap_HRC_finemap/"
+		param3 = "output/polyfun_susie_HRC_finemap/"
+		param4 = "output/polyfun_finemap_HRC_finemap/"
+	conda : "envs/r.yaml"
+	resources: mem_mb = 20000
+	script: "scripts/merge_loci.R"
 
 rule process_CSs_PIPs:
 	input: expand("output/{ss}.csv", ss= SS)
