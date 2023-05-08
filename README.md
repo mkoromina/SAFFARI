@@ -24,7 +24,7 @@ Note that in order to run snakemake pipelines, you should follow one of the two 
 
 To run this Snakemake pipeline with the different "modules", you will need two main inputs: (i) formatted and cleaned GWAS summary sumstats ( in a ```.gz``` format) and (ii) a list of top loci to finemap (usually stored as a ```.csv```file). GWAS sumstats should be cleaned and any duplicate SNPs shall be removed beforehand. Both the top loci file and the GWAS sumstats should include the columns as outputted from [Ricopili](https://sites.google.com/a/broadinstitute.org/ricopili/overview).
 
-Future impovements in the pipeline include creating rules for GWAS sumstats processing and creating the top loci file. In the meantime, GWAS sumstats from Ricopili are accepted as input.
+Future improvements in the pipeline include creating rules for GWAS sumstats processing and creating the top loci file. In the meantime, GWAS sumstats from Ricopili are accepted as an input.
 
 GWAS columns from Ricopili include:
 - ```CHR```    ```SNP```     ```BP```    ```A1```    ```A2```    ```FRQ_A_41917```    ```FRQ_U_371549```    ```INFO```    ```OR```    ```SE```    ```P```  ```ngt```    ```Direction```    ```HetISqt```    ```HetDf```    ```HetPVa```   ```Nca```    ```Nco```   ```Neff_half```
@@ -34,7 +34,7 @@ Top loci file is derived from the Ricopili clumping procedure and should include
 - ```SNP```    ```Chromosome```    ```Position```    ```Gene```    ```Locus```    ```range.left```    ```range.right```
 (Gene, Locus fields can include the same information, range.left and range.right are defined as the 'fine-mapping windows')
 
-Annotations (baseline LF2.2 model) for estimating the functional priors (rule l2reg_sldsc) can be downloaded from [here](https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/baselineLF_v2.2.UKB.tar.gz). Precomputed UKB LD matrices (Alkes Price group) can be downloaded from an Amazon S3 bucket  (s3://broad-alkesgroup-ukbb-ld/UKBB_LD/).
+Annotations (baseline LF2.2 model) for estimating the functional priors (rule l2reg_sldsc) can be downloaded from [here](https://broad-alkesgroup-ukbb-ld.s3.amazonaws.com/UKBB_LD/baselineLF_v2.2.UKB.tar.gz). Precomputed UKB LD matrices (Alkes Price group) can be downloaded from an Amazon S3 bucket (s3://broad-alkesgroup-ukbb-ld/UKBB_LD/).
 
 ## Credits
 This work would not have been feasible without the contribution and wonderful work of other researchers:
@@ -47,4 +47,4 @@ This work would not have been feasible without the contribution and wonderful wo
 
 ## Issues 
 Shall any issues occur when running the pipeline, please feel free to open an issue on Github by providing a mini reproducible example.
-Contributions are also more than welcome.
+Contributions are also welcome.
