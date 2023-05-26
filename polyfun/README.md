@@ -1,1 +1,1 @@
-##create a polyfun software repository.
+Polyfun software repository containing the latest file and environment versions.
