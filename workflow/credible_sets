@@ -1,7 +1,6 @@
 ##this module can be run for one approach (one LD ref panel and one fine-mapping range each time) until further parallelization
 ##demo case here for HRC + finemapping windows 
 
-
 from numpy import expand_dims
 import pandas as pd
 
