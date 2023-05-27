@@ -1,5 +1,4 @@
-SS = ["suicide_gwas"]  #then daner_bip_pgc3
-##parallelize for multiple datasets SS="(suicide_gwas|daner_bip_pgc3)"
+SS = ["suicide_gwas"]  #insert GWAS dataset name
 
 rule all:
         input: expand("resources/{ss}_loci_ranges.tsv", ss = SS)
