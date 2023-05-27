@@ -6,6 +6,7 @@ Order of running the different snakemake modules:
 - (2) fine-mapping (UKB panel),
 - (3) fine-mapping_HRC (HRC panel), 
 - (4) credible_sets.
+## module credible_sets is under beta-testing.
 
 ## Important note
 - Make sure that you edit the Snakefiles accordingly to point to the directory where Polyfun and the precomputed UKB LD matrices are stored.
