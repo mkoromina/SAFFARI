@@ -70,8 +70,8 @@ rule run_polyfun_susie:
  	params:
  	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['CHR'],
  		pos = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['BP'],
- 		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['locus_start'],
- 		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['locus_end'],
+ 		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.left'],
+ 		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.right'],
 		ld_ranges = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['file']
  	conda: "envs/polyfun.yml"
 	resources: mem_mb= 32000
@@ -106,8 +106,8 @@ rule run_polyfun_finemap:
   	params:
   	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['CHR'],
   		pos = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['BP'],
-  		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['locus_start'],
-  		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['locus_end'],
+  		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.left'],
+  		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.right'],
  		ld_ranges = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['file'] 
   	conda: "envs/polyfun.yml"
 	resources: mem_mb= 32000
@@ -143,8 +143,8 @@ rule run_only_finemap:
  	params:
  	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['CHR'],
  		pos = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['BP'],
- 		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['locus_start'],
- 		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['locus_end'],
+ 		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.left'],
+ 		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.right'],
 		ld_ranges = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['file'] 
  	conda: "envs/polyfun.yml"
 	resources: mem_mb = 32000
@@ -182,8 +182,8 @@ rule run_only_susie:
  	params:
  	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['CHR'],
  		pos = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['BP'],
- 		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['locus_start'],
- 		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['locus_end'],
+ 		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.left'],
+ 		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.right'],
 		ld_ranges = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['file'] 
  	conda: "envs/polyfun.yml"
 	resources: mem_mb = 32000
