@@ -1,4 +1,4 @@
-SS = ["suicide_gwas"]  #insert GWAS dataset name
+SS = ["daner_bip_pgc3"]  #insert GWAS dataset name
 
 rule all:
         input: expand("resources/{ss}_loci_ranges.tsv", ss = SS)
