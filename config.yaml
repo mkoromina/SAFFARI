@@ -1,5 +1,5 @@
 summary_stats_prefix:
   - Bellenguez_2021_hg19
+  - Mullins_2021
 mode:
   - GWAS 
-top_loci_file:

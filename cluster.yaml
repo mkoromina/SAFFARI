@@ -9,7 +9,7 @@ __default__:
   error: logs/{rule}:{wildcards}.stderr
   himem: ""
 l2reg_sldsc:
-  time: '1000'
+  time: '180'
   cores: 1
   mem: 960000
 run_polyfun_susie:
