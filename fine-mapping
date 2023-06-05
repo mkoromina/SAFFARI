@@ -9,8 +9,8 @@ import pandas as pd
 SS = config["summary_stats_prefix"] 
 CHR = list(range(1,23))
 
-gwas_df = pd.read_excel("/sc/arion/projects/ad-omics/data/references/GWAS/GWAS-QTL_data_dictionary.xlsx", sheet_name = 2)
-qtl_df = pd.read_excel("/sc/arion/projects/ad-omics/data/references/GWAS/GWAS-QTL_data_dictionary.xlsx", sheet_name = 1)
+gwas_df = pd.read_csv("/sc/arion/projects/ad-omics/data/references/GWAS/GWAS-QTL_data_dictionary_GWAS.tsv", sep = '\t')
+#qtl_df = pd.read_excel("/sc/arion/projects/ad-omics/data/references/GWAS/GWAS-QTL_data_dictionary.xlsx", sheet_name = 1)
 
 # print(gwas_df["dataset"])
 
