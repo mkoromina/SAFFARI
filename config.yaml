@@ -1,4 +1,6 @@
 ##please provide the summary_stats prefix for each GWAS, the absolute paths to the summary stats and the top loci files
+##and the effective sample size (Neff)
+
 summary_stats_prefix:
   - Mullins_2021
   - Bellenguez_2021_hg19
@@ -8,6 +10,6 @@ top_loci_file:
 full_sumstats:
   - /sc/arion/projects/ad-omics/data/references/GWAS/Daner_2020.processed.tsv.gz
   - /sc/arion/projects/ad-omics/data/references/GWAS/Bellenguez_hg19/processed_updated/Bellenguez_2021_hg19.processed.tsv.gz
-#N: 
-  #- 413466
-  #- 487511
+N: 
+  - 101962
+  - 487511
