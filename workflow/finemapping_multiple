@@ -82,7 +82,8 @@ rule run_polyfun_susie:
 		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
 		start = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.left'],
 		end = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.right'],
-		ld_ranges = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['file']
+		ld_ranges = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['file'],
+		Neff = lambda wilcards: sample_size[ss].loc[wildcards.N]
  	conda: "envs/polyfun.yml"
 	resources: mem_mb= 32000
  	shell:
@@ -90,7 +91,7 @@ rule run_polyfun_susie:
  		python polyfun/finemapper.py \
  		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
  		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
- 		--n 101962 \
+ 		--n {params.Neff} \
  		--chr {params.chrom} \
  		--start {params.start} \
  		--end {params.end} \
