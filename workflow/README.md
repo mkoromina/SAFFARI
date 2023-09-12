@@ -7,7 +7,8 @@ Order of running the different snakemake modules:
 - (3) fine-mapping_HRC (HRC panel), 
 - (4) credible_sets.
 
-### module credible_sets is under beta-testing.
+### Note 1 
+The module credible_sets is under beta-testing.
 
-### Note
+### Note 2
 Make sure to download UKB precomputed LD matrices from https://alkesgroup.broadinstitute.org/UKBB_LD/ and amend the path to these accordingly. 
