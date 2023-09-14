@@ -1,7 +1,7 @@
 from snakemake.io import expand
 from numpy import expand_dims
 import pandas as pd
-#change params (files names, top loci and Neff accordingly)
+#change Neff accordingly
 
 SS = ["daner_bip_pgc3"]  
 CHR = list(range(1,23))
