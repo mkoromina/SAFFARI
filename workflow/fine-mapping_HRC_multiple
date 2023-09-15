@@ -112,7 +112,7 @@ rule run_polyfun_finemap:
   	input:
   	    snpvar = expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR)
   	output:
-  		output = expand("output/{{ss}}/polyfun_finemap_UKB_finemap/{{ss}}_finemap_finemap.{{snp}}.gz", snp = snp_tables[ss].index.tolist())
+  		output = expand("output/{{ss}}/polyfun_finemap_HRC_finemap/{{ss}}_finemap_finemap.{{snp}}.gz", snp = snp_tables[ss].index.tolist())
   	params:
   	 	chrom = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['chrom_orig'],
 		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
@@ -149,7 +149,7 @@ rule run_only_finemap:
  	input:
  	    snpvar = expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR)
  	output:
- 		output = expand("output/{{ss}}/only_finemap_UKB_finemap/{{ss}}_only_finemap.{{snp}}.gz", snp = snp_tables[ss].index.tolist())
+ 		output = expand("output/{{ss}}/only_finemap_HRC_finemap/{{ss}}_only_finemap.{{snp}}.gz", snp = snp_tables[ss].index.tolist())
  	params:
  	 	chrom = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['chrom_orig'],
 		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
@@ -188,7 +188,7 @@ rule run_only_susie:
  	input:
  	    snpvar = expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR)
  	output:
- 		output = expand("output/{{ss}}/only_susie_UKB_finemap/{{ss}}_only_susie.{{snp}}.gz", snp = snp_tables[ss].index.tolist())
+ 		output = expand("output/{{ss}}/only_susie_HRC_finemap/{{ss}}_only_susie.{{snp}}.gz", snp = snp_tables[ss].index.tolist())
  	params:
  	 	chrom = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['chrom_orig'],
 		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
