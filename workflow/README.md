@@ -8,4 +8,4 @@ Order of running the different snakemake modules:
   
 
 ### Note:
-Make sure to download UKB precomputed LD matrices from https://alkesgroup.broadinstitute.org/UKBB_LD/ and amend the path to these accordingly. 
+Make sure to download UKB precomputed LD matrices and functional priors from the respective links in the Wiki.
