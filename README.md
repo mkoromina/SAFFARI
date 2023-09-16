@@ -1,1 +1,3 @@
-Please check the Wiki page for more information about this fine-mapping pipeline implemented through Snakemake.
+### This repository contains code for running 4 different fine-mapping methods (through Polyfun) through Snakemake.
+
+### Please check the Wiki page for more details.
