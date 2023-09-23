@@ -1,3 +1,4 @@
-### This repository contains code for running 4 different fine-mapping methods (SuSiE, FINEMAP, PolyFun+SuSiE, PolyFun+FINEMAP) through Snakemake.
+### Statistical And Functional Fine-mApping of GWAS Risk locI (SAFFARI) 
 
-#### Please check the Wiki page for more details.
+**SAFFARI** is designed to implement Snakemake and run 4 different fine-mapping methods (SuSiE, FINEMAP, PolyFun+SuSiE, PolyFun+FINEMAP).
+Please check the **Wiki** page for more details.
