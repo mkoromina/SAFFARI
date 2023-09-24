@@ -10,4 +10,4 @@ Order of running the different Snakefiles:
 The Snakefiles with the **"_multiple"** extension can be used if you wish to run the pipeline for more than one GWAS at a time.
 
 ### Note:
-Make sure to download UKB precomputed LD matrices and functional priors from the respective links in the Wiki and update accordingly the path to these within the Snakefiles.
+Make sure to (i) download **UKB precomputed LD matrices** and **functional annotations** to compute Bayesian priors from the respective links in the Wiki Page and (ii) update accordingly the **paths** to these files within the Snakefiles.
