@@ -6,6 +6,8 @@ Order of running the different Snakefiles:
 - (2) fine-mapping (UKB panel),
 - (3) fine-mapping_HRC (HRC panel)
   
+### Note:
+The Snakefiles with the **"_multiple"** extension can be used if you wish to run the pipeline for more than one GWAS at a time.
 
 ### Note:
 Make sure to download UKB precomputed LD matrices and functional priors from the respective links in the Wiki and update accordingly the path to these within the Snakefiles.
