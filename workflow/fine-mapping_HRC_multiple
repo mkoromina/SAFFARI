@@ -67,13 +67,14 @@ rule l2reg_sldsc:
           		--no-partitions \
           		--output-prefix {params.prefix} \
           		--sumstats {input.gwas} \
-  	   			--allow-missing \
+  	   		--allow-missing \
           		--ref-ld-chr /sc/arion/projects/ad-omics/ashvin/finemapping/UKBB_priors/hg19_baselineLF2.2.UKB{params.ldscores} \
       			--w-ld-chr /sc/arion/projects/ad-omics/ashvin/finemapping/UKBB_priors/hg19_baselineLF2.2.UKB{params.weights}
       		"""
 
 rule run_polyfun_susie:
- 	input:
+ 	#n = sample_size[ss]
+	input:
  	    snpvar = expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR)
  	output:
  		output = expand("output/{{ss}}/polyfun_susie_HRC_finemap/{{ss}}_finemap.{{snp}}.gz", ss = SS, snp = snp_tables[ss].index.tolist())
@@ -82,7 +83,7 @@ rule run_polyfun_susie:
 		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
 		start = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.left'],
 		end = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.right'],
-		Neff = lambda wilcards: sample_size[ss].loc[wildcards.N]
+		#param1 = "{n}"
  	conda: "envs/polyfun.yml"
 	resources: mem_mb= 32000
  	shell:
@@ -90,7 +91,7 @@ rule run_polyfun_susie:
  		python polyfun/finemapper.py \
  		--geno /sc/arion/projects/psychgen/resources/genotype_ref_panel/HRC_fromBroad/chr1_22c/pop_EUR/HRC.r1-1.EGA.GRCh37.chr{params.chrom}.impute.plink.EUR \
  		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
- 		--n {params.Neff} \
+ 		--n {params.param1} \
  		--chr {params.chrom} \
  		--start {params.start} \
  		--end {params.end} \
@@ -109,7 +110,8 @@ rule merge_finemapping_jobs_polysusie:
 
 
 rule run_polyfun_finemap:
-  	input:
+  	#n = sample_size[ss]
+	input:
   	    snpvar = expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR)
   	output:
   		output = expand("output/{{ss}}/polyfun_finemap_HRC_finemap/{{ss}}_finemap_finemap.{{snp}}.gz", snp = snp_tables[ss].index.tolist())
@@ -118,7 +120,7 @@ rule run_polyfun_finemap:
 		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
 		start = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.left'],
 		end = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.right'],
-		Neff = lambda wilcards: sample_size[ss].loc[wildcards.N]
+		#param1 = "{n}"
   	conda: "envs/polyfun.yml"
 	resources: mem_mb= 32000
   	shell:
@@ -126,7 +128,7 @@ rule run_polyfun_finemap:
   		python polyfun/finemapper.py \
   		--geno /sc/arion/projects/psychgen/resources/genotype_ref_panel/HRC_fromBroad/chr1_22c/pop_EUR/HRC.r1-1.EGA.GRCh37.chr{params.chrom}.impute.plink.EUR \
   		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
-  		--n {params.Neff} \
+  		--n {params.param1} \
   		--chr {params.chrom} \
   		--start {params.start} \
   		--end {params.end} \
@@ -146,7 +148,8 @@ rule merge_finemapping_jobs_polyfinemap:
 
 
 rule run_only_finemap:
- 	input:
+ 	#n = sample_size[ss]
+	input:
  	    snpvar = expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR)
  	output:
  		output = expand("output/{{ss}}/only_finemap_HRC_finemap/{{ss}}_only_finemap.{{snp}}.gz", snp = snp_tables[ss].index.tolist())
@@ -155,7 +158,7 @@ rule run_only_finemap:
 		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
 		start = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.left'],
 		end = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.right'],
-		Neff = lambda wilcards: sample_size[ss].loc[wildcards.N]
+		#param1 = "{n}"
  	conda: "envs/polyfun.yml"
 	resources: mem_mb = 32000
  	shell:
@@ -163,7 +166,7 @@ rule run_only_finemap:
  		python polyfun/finemapper.py \
  		--geno /sc/arion/projects/psychgen/resources/genotype_ref_panel/HRC_fromBroad/chr1_22c/pop_EUR/HRC.r1-1.EGA.GRCh37.chr{params.chrom}.impute.plink.EUR \
  		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
- 		--n {params.Neff} \
+ 		--n {params.param1} \
  		--chr {params.chrom} \
  		--start {params.start} \
  		--end {params.end} \
@@ -185,7 +188,8 @@ rule merge_finemapping_jobs_onlyfinemap:
 
 
 rule run_only_susie:
- 	input:
+ 	#n = sample_size[ss]
+	input:
  	    snpvar = expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR)
  	output:
  		output = expand("output/{{ss}}/only_susie_HRC_finemap/{{ss}}_only_susie.{{snp}}.gz", snp = snp_tables[ss].index.tolist())
@@ -194,7 +198,7 @@ rule run_only_susie:
 		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
 		start = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.left'],
 		end = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.right'],
-		Neff = lambda wilcards: sample_size[ss].loc[wildcards.N]
+		#param1 = "{n}"
  	conda: "envs/polyfun.yml"
 	resources: mem_mb = 32000
  	shell:
@@ -202,7 +206,7 @@ rule run_only_susie:
  		python polyfun/finemapper.py \
  		--geno /sc/arion/projects/psychgen/resources/genotype_ref_panel/HRC_fromBroad/chr1_22c/pop_EUR/HRC.r1-1.EGA.GRCh37.chr{params.chrom}.impute.plink.EUR \
  		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
- 		--n {params.Neff} \
+ 		--n {params.param1} \
  		--chr {params.chrom} \
  		--start {params.start} \
  		--end {params.end} \
