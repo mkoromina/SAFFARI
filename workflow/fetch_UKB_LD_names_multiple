@@ -1,0 +1,20 @@
+import pandas as pd
+
+SS = config["summary_stats_prefix"]
+top_loci = config["top_loci_file"]
+
+snp_tables = {}
+i = 0
+for ss in SS:
+    snp_tables[ss] = config["top_loci_file"][i]
+    i += 1
+
+rule all:
+    input: expand("resources/{ss}_loci_ranges.tsv", ss = SS)
+
+rule import_finemap_loci:
+        input: toploci = lambda wildcards: snp_tables[wildcards.ss]
+        output: expand("resources/{{ss}}_loci_ranges.tsv", ss = SS)
+        conda: "envs/r.yaml"
+        resources: mem_mb = 10000
+        script: "scripts/UKBiobank_LD.R"
