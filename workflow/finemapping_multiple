@@ -73,18 +73,17 @@ rule l2reg_sldsc:
       		"""
 
 rule run_polyfun_susie:
- 	#n = sample_size[ss]
 	input:
  	    snpvar = expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR)
  	output:
  		output = expand("output/{{ss}}/polyfun_susie_UKB_finemap/{{ss}}_finemap.{{snp}}.gz", ss = SS, snp = snp_tables[ss].index.tolist())
  	params:
- 	 	chrom = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['chrom_orig'],
+ 	 	sample_size_gwas = lambda wildcards: sample_size[wildcards.ss],
+		chrom = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['chrom_orig'],
 		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
 		start = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.left'],
 		end = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.right'],
-		ld_ranges = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['file'],
-		#param1 = "{n}"
+		ld_ranges = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['file']
  	conda: "envs/polyfun.yml"
 	resources: mem_mb= 32000
  	shell:
@@ -92,7 +91,7 @@ rule run_polyfun_susie:
  		python polyfun/finemapper.py \
  		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
  		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
- 		--n {params.param1} \
+ 		--n {params.sample_size_gwas} \
  		--chr {params.chrom} \
  		--start {params.start} \
  		--end {params.end} \
@@ -111,18 +110,17 @@ rule merge_finemapping_jobs_polysusie:
 
 
 rule run_polyfun_finemap:
-  	#n = sample_size[ss]
 	input:
   	    snpvar = expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR)
   	output:
   		output = expand("output/{{ss}}/polyfun_finemap_UKB_finemap/{{ss}}_finemap_finemap.{{snp}}.gz", snp = snp_tables[ss].index.tolist())
   	params:
-  	 	chrom = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['chrom_orig'],
+  	 	sample_size_gwas = lambda wildcards: sample_size[wildcards.ss],
+		chrom = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['chrom_orig'],
 		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
 		start = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.left'],
 		end = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.right'],
-		ld_ranges = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['file'],
-		#param1 = "{n}"
+		ld_ranges = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['file']
   	conda: "envs/polyfun.yml"
 	resources: mem_mb= 32000
   	shell:
@@ -130,7 +128,7 @@ rule run_polyfun_finemap:
   		python polyfun/finemapper.py \
   		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
   		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
-  		--n {params.param1} \
+  		--n {params.sample_size_gwas} \
   		--chr {params.chrom} \
   		--start {params.start} \
   		--end {params.end} \
@@ -150,18 +148,17 @@ rule merge_finemapping_jobs_polyfinemap:
 
 
 rule run_only_finemap:
- 	#n = sample_size[ss]
 	input:
  	    snpvar = expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR)
  	output:
  		output = expand("output/{{ss}}/only_finemap_UKB_finemap/{{ss}}_only_finemap.{{snp}}.gz", snp = snp_tables[ss].index.tolist())
  	params:
- 	 	chrom = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['chrom_orig'],
+ 	 	sample_size_gwas = lambda wildcards: sample_size[wildcards.ss],
+		chrom = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['chrom_orig'],
 		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
 		start = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.left'],
 		end = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.right'],
-		ld_ranges = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['file'],
-		#param1 = "{n}"
+		ld_ranges = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['file']
  	conda: "envs/polyfun.yml"
 	resources: mem_mb = 32000
  	shell:
@@ -169,7 +166,7 @@ rule run_only_finemap:
  		python polyfun/finemapper.py \
  		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
  		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
- 		--n {params.param1} \
+ 		--n {params.sample_size_gwas} \
  		--chr {params.chrom} \
  		--start {params.start} \
  		--end {params.end} \
@@ -191,18 +188,17 @@ rule merge_finemapping_jobs_onlyfinemap:
 
 
 rule run_only_susie:
- 	#n = sample_size[ss]
 	input:
  	    snpvar = expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR)
  	output:
  		output = expand("output/{{ss}}/only_susie_UKB_finemap/{{ss}}_only_susie.{{snp}}.gz", snp = snp_tables[ss].index.tolist())
  	params:
- 	 	chrom = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['chrom_orig'],
+ 	 	sample_size_gwas = lambda wildcards: sample_size[wildcards.ss],
+		chrom = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['chrom_orig'],
 		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
 		start = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.left'],
 		end = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.right'],
-		ld_ranges = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['file'],
-		#param1 = "{n}"
+		ld_ranges = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['file']
  	conda: "envs/polyfun.yml"
 	resources: mem_mb = 32000
  	shell:
@@ -210,7 +206,7 @@ rule run_only_susie:
  		python polyfun/finemapper.py \
  		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
  		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
- 		--n {params.param1} \
+ 		--n {params.sample_size_gwas} \
  		--chr {params.chrom} \
  		--start {params.start} \
  		--end {params.end} \
