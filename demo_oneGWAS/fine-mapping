@@ -37,6 +37,7 @@ rule munge_polyfun:
       		--min-maf 0
       		"""
 
+#adjust path to functional annotation files (UKBB priors) to run l2reg sldsc
 rule l2reg_sldsc: 
       	input: 
       		gwas = expand("output/{{ss}}_neff.munged.parquet", ss = SS)
@@ -61,7 +62,7 @@ rule l2reg_sldsc:
       			--w-ld-chr /sc/arion/projects/ad-omics/ashvin/finemapping/UKBB_priors/hg19_baselineLF2.2.UKB{params.weights}
       		"""
 
-
+#adjust the path to wherever you stored the UKB LD files in all finemapping rules
 rule run_polyfun_susie:
  	input:
  	    snpvar = expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR)
