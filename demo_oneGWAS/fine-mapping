@@ -69,7 +69,7 @@ rule run_polyfun_susie:
  	output:
  		output = expand("output/polyfun_susie_UKB_finemap/{{ss}}_finemap.{{snp}}.gz", ss = SS, snp = LD_UKB_ranges.index.tolist())
  	params:
- 	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['CHR'],
+ 	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['chrom_orig'],
  		pos = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['BP'],
  		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.left'],
  		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.right'],
@@ -105,7 +105,7 @@ rule run_polyfun_finemap:
   	output:
   		output = expand("output/polyfun_finemap_UKB_finemap/{{ss}}_finemap_finemap.{{snp}}.gz", snp = LD_UKB_ranges.index.tolist())
   	params:
-  	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['CHR'],
+  	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['chrom_orig'],
   		pos = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['BP'],
   		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.left'],
   		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.right'],
@@ -142,7 +142,7 @@ rule run_only_finemap:
  	output:
  		output = expand("output/only_finemap_UKB_finemap/{{ss}}_only_finemap.{{snp}}.gz", snp = LD_UKB_ranges.index.tolist())
  	params:
- 	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['CHR'],
+ 	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['chrom_orig'],
  		pos = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['BP'],
  		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.left'],
  		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.right'],
@@ -181,7 +181,7 @@ rule run_only_susie:
  	output:
  		output = expand("output/only_susie_UKB_finemap/{{ss}}_only_susie.{{snp}}.gz", snp = LD_UKB_ranges.index.tolist())
  	params:
- 	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['CHR'],
+ 	 	chrom = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['chrom_orig'],
  		pos = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['BP'],
  		start = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.left'],
  		end = lambda wildcards: LD_UKB_ranges.loc[wildcards.snp]['range.right'],
