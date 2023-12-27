@@ -11,8 +11,8 @@ If you end up using this pipeline, please make sure to acknowledge the flagship 
 
 - [SuSiE](https://academic.oup.com/jrsssb/article/82/5/1273/7056114)
 
--[FINEMAP](https://academic.oup.com/bioinformatics/article/32/10/1493/1743040)
+- [FINEMAP](https://academic.oup.com/bioinformatics/article/32/10/1493/1743040)
 
--[Snakemake](https://academic.oup.com/bioinformatics/article/28/19/2520/290322)
+- [Snakemake](https://academic.oup.com/bioinformatics/article/28/19/2520/290322)
 
 And also the [current repository](https://github.com/mkoromina/SAFFARI/). A link to the accompanying manuscript will be posted soon.
