@@ -3,7 +3,7 @@
 **SAFFARI** is designed to implement Snakemake and run 4 different fine-mapping methods (SuSiE, FINEMAP, PolyFun+SuSiE, PolyFun+FINEMAP).
 Please check the [WiKi page](https://github.com/mkoromina/SAFFARI/wiki) for more details.
 
-Manuscript has been submitted for publication (Dec 2023).
+**Manuscript** has been submitted for publication in Nature Neuroscience.
 
 If you end up using this pipeline, please make sure to acknowledge the flagship papers of the softwares implemented:
 
