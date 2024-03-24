@@ -15,4 +15,4 @@ If you end up using this pipeline, please make sure to acknowledge the flagship 
 
 - [Snakemake](https://academic.oup.com/bioinformatics/article/28/19/2520/290322)
 
-And also the [current repository](https://github.com/mkoromina/SAFFARI/). A link to the accompanying manuscript will be posted soon.
+- The current repository (SAFFARI) by citing our [preprint](https://pubmed.ncbi.nlm.nih.gov/38405768/).
