@@ -114,7 +114,7 @@ rule run_polyfun_finemap:
   	output:
   		output = expand("output/{{ss}}/polyfun_finemap_HRC_finemap/{{ss}}_finemap_finemap.{{snp}}.gz", snp = snp_tables[ss].index.tolist())
   	params:
-  	 	sample_size_gwas = lambda wildcards: sample_size[wildcards.ss,
+  	 	sample_size_gwas = lambda wildcards: sample_size[wildcards.ss],
 		chrom = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['chrom_orig'],
 		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
 		start = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.left'],
