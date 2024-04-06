@@ -1,3 +1,5 @@
+##please note that the --cluster-config flag has been deprecated by newest Snakemake versions.
+
 __default__:
   #partition: chimera
   queue: premium
