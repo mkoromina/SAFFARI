@@ -1,5 +1,5 @@
-##please provide the summary_stats prefix for each GWAS, the absolute paths to the summary stats and the top loci files
-##and the effective sample size (Neff)
+##please provide the summary_stats prefix for each GWAS, and the summary stats and the top loci files (absolute paths)
+##denote the effective sample size (Neff)
 
 summary_stats_prefix:
   - Mullins_2021
