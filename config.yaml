@@ -1,15 +1,12 @@
-##please provide the summary_stats prefix for each GWAS, and the summary stats and the top loci files (absolute paths)
-##denote the effective sample size (Neff)
-
 summary_stats_prefix:
   - Mullins_2021
   - Bellenguez_2021_hg19
 top_loci_file:
-  - /sc/arion/projects/ad-omics/ashvin/finemapping_smk/resources/daner_bip_pgc3_toploci.csv
-  - /sc/arion/projects/ad-omics/data/references/GWAS/Bellenguez_hg19/Bellenguez_top_hg19.tsv
+  - /sc/arion/projects/ad-omics/ashvin/finemapping_smk/resources/Mullins_2021_toploci.csv
+  - /sc/arion/projects/ad-omics/data/references/GWAS/Bellenguez_hg19/Bellenguez_2021_hg19_toploci.csv
 full_sumstats:
-  - /sc/arion/projects/ad-omics/data/references/GWAS/Daner_2020.processed.tsv.gz
-  - /sc/arion/projects/ad-omics/data/references/GWAS/Bellenguez_hg19/processed_updated/Bellenguez_2021_hg19.processed.tsv.gz
+  - /sc/arion/projects/ad-omics/data/references/GWAS/Mullins_2021.gz
+  - /sc/arion/projects/ad-omics/data/references/GWAS/Bellenguez_hg19/processed_updated/Bellenguez_2021_hg19.gz
 N: 
   - 101962
   - 487511
