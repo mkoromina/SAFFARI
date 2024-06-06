@@ -3,15 +3,15 @@ import pandas as pd
 
 SS = config["summary_stats_prefix"]
 CHR = list(range(1, 23))
+top_loci = config["top_loci_file"]
 
 snp_tables = {}
 full_sumstats = {}
 sample_size = {}
-top_loci_files = config["top_loci_file"]
 i = 0
 
 for ss in SS:
-    tsv_file = top_loci_files[i]
+    tsv_file = top_loci_file[i]
     snp_tables[ss] = pd.read_table(tsv_file, sep='\t', dtype=str).set_index("SNP", drop=False)
     full_sumstats[ss] = config["full_sumstats"][i]
     sample_size[ss] = config["N"][i]
