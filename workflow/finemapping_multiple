@@ -4,6 +4,7 @@ import pandas as pd
 
 SS = config["summary_stats_prefix"]
 CHR = list(range(1,23))
+top_loci = config["top_loci_file"]
 
 snp_tables = {}
 full_sumstats = {}
@@ -11,7 +12,8 @@ sample_size = {}
 i = 0
 
 for ss in SS:
-	tsv_file = expand("resources/{ss}_loci_ranges.tsv", ss = ss)[0]
+	#tsv_file = expand("resources/{ss}_loci_ranges.tsv", ss = ss)[0]
+	tsv_file = top_loci[i]
 	snp_tables[ss] = pd.read_table(tsv_file, sep='\t', dtype=str).set_index("SNP", drop=False)
 	full_sumstats[ss] = config["full_sumstats"][i]
         sample_size[ss] = config["N"][i]
@@ -79,11 +81,11 @@ rule run_polyfun_susie:
  		output = expand("output/{{ss}}/polyfun_susie_UKB_finemap/{{ss}}_finemap.{{snp}}.gz", ss = SS, snp = snp_tables[ss].index.tolist())
  	params:
  	 	sample_size_gwas = lambda wildcards: sample_size[wildcards.ss],
-		chrom = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['chrom_orig'],
-		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
-		start = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.left'],
-		end = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.right'],
-		ld_ranges = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['file']
+		chrom = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['chrom_orig'],
+		pos = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['BP'],
+		start = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['range.left'],
+		end = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['range.right'],
+		ld_ranges = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['file']
  	conda: "envs/polyfun.yml"
 	resources: mem_mb= 32000
  	shell:
@@ -116,11 +118,11 @@ rule run_polyfun_finemap:
   		output = expand("output/{{ss}}/polyfun_finemap_UKB_finemap/{{ss}}_finemap_finemap.{{snp}}.gz", snp = snp_tables[ss].index.tolist())
   	params:
   	 	sample_size_gwas = lambda wildcards: sample_size[wildcards.ss],
-		chrom = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['chrom_orig'],
-		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
-		start = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.left'],
-		end = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.right'],
-		ld_ranges = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['file']
+		chrom = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['chrom_orig'],
+		pos = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['BP'],
+		start = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['range.left'],
+		end = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['range.right'],
+		ld_ranges = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['file']
   	conda: "envs/polyfun.yml"
 	resources: mem_mb= 32000
   	shell:
@@ -154,11 +156,11 @@ rule run_only_finemap:
  		output = expand("output/{{ss}}/only_finemap_UKB_finemap/{{ss}}_only_finemap.{{snp}}.gz", snp = snp_tables[ss].index.tolist())
  	params:
  	 	sample_size_gwas = lambda wildcards: sample_size[wildcards.ss],
-		chrom = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['chrom_orig'],
-		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
-		start = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.left'],
-		end = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.right'],
-		ld_ranges = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['file']
+		chrom = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['chrom_orig'],
+		pos = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['BP'],
+		start = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['range.left'],
+		end = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['range.right'],
+		ld_ranges = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['file']
  	conda: "envs/polyfun.yml"
 	resources: mem_mb = 32000
  	shell:
@@ -194,11 +196,11 @@ rule run_only_susie:
  		output = expand("output/{{ss}}/only_susie_UKB_finemap/{{ss}}_only_susie.{{snp}}.gz", snp = snp_tables[ss].index.tolist())
  	params:
  	 	sample_size_gwas = lambda wildcards: sample_size[wildcards.ss],
-		chrom = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['chrom_orig'],
-		pos = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['BP'],
-		start = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.left'],
-		end = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['range.right'],
-		ld_ranges = lambda wildcards: snp_tables[ss].loc[wildcards.snp]['file']
+		chrom = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['chrom_orig'],
+		pos = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['BP'],
+		start = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['range.left'],
+		end = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['range.right'],
+		ld_ranges = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['file']
  	conda: "envs/polyfun.yml"
 	resources: mem_mb = 32000
  	shell:
