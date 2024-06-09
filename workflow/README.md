@@ -1,4 +1,4 @@
-The workflow includes the **envs** directory, the **scripts** directory and the 3 **Snakefiles** (one for pre-processing, one for running finemapping with UKB LD and one for finemapping with HRC).
+The workflow directory includes the **envs** subdirectory, the **scripts** subdirectory and the 3 **Snakefiles** (one for pre-processing, one for running finemapping with UKB LD and one for finemapping with HRC LD).
 When running each one of the Snakefiles, the corresponding file shall be defined by *-S {file}* within the snakemake command.
 
 Order of running the different Snakefiles: 
