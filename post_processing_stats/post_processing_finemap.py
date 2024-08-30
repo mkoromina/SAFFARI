@@ -6,13 +6,12 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-i','--input',dest='input',type=str,help="path to cleaned input files (as a directory). this assumes that the extension is *.gz and that the locus rsid is in the filename")
 parser.add_argument('-o','--output',dest='output',type=str,help="path to where things go after (as a directory) . the convention will take the input and add _post_processes_results.txt after by default")
-parser.add_argument('-mb','--mb',dest='mb_window',default=False,action='store_true',help="whether or not the files in the input directory are being used with a different window. if so, the program will generate n lists of files corresponding to the number of different windows. this relies on the naming convention not having whitespace at the window level - ie 3mb is accepted, 3_mb is not. assumed nomenclature is also file_fine_map_something_something_100mb.locus.gz. the mb splitting is reliant on this convention")
 parser.add_argument('-p','--pip',dest='pip_thresh',type=float,default=0.5,help="threshold for pip (whereby snps > pip value are retained). the default is 0.5")
 
 
 
 args = parser.parse_args()
-
+mb=False
 def make_df(files,thresh):
 
     for i,d in enumerate(files):
@@ -36,9 +35,9 @@ def make_df(files,thresh):
 files = glob.glob(f"{args.input}/*rs*.gz")
 files = [i for i in files if 'all' not in i] # just to remove previous merged files from consideration 
 if sum([1 if 'mb' in i else 0 for i in files]) != len(files):
-    print('multiple mb windows present. changing mb argument to true')
-    args.mb_window=True
-if args.mb_window:
+    print('multiple mb windows present.')
+    mb=True
+if mb:
     reg_files = [i for i in files if 'mb' not in i]
     mb_files = [i for i in files if 'mb' in i]
     keys_mb = [i.split(".")[0].split('_')[-1] for i in mb_files]
