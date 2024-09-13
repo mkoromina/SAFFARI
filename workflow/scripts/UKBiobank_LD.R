@@ -12,11 +12,16 @@ suppressPackageStartupMessages(library(yaml))
 ######################################################################################################
 
 LD.UKB_find_ld_prefix <- function(chrom, min_pos) {
-   bp_starts <- seq(1,252000001, by = 1000000)
-   bp_ends <- bp_starts+3000000
-   i <- max(which(bp_starts<=as.numeric(min_pos)))
-   list(chrom = paste0("chr", chrom), beginning = bp_starts[i], end = bp_ends[i])
- }
+  # Define the original sequence of sliding window starts
+  bp_starts <- seq(1, 252000001, by = 1000000)
+  bp_ends <- bp_starts + 3000000
+  
+  # Find the index where min_pos is closest to the center of a window
+  center_positions <- bp_starts + 1500000
+  i <- which.min(abs(center_positions - as.numeric(min_pos)))
+  
+  list(chrom = paste0("chr", chrom), beginning = bp_starts[i], end = bp_ends[i])
+}
 
 gwas = snakemake@wildcards[[2]]
 
