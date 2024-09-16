@@ -2,29 +2,20 @@ from snakemake.io import expand
 from numpy import expand_dims
 import pandas as pd
 
-#SS = config["summary_stats_prefix"]
-#CHR = list(range(1,23))
-#top_loci = config["top_loci_file"]
-
 SS = config["summary_stats_prefix"]
 CHR = list(range(1,23))
 
-#snp_tables = {}
-#full_sumstats = {}
-#sample_size = {}
-#i = 0
+snp_tables = {}
+full_sumstats = {}
+sample_size = {}
+i = 0
 
-tsv_file = {x: y for x, y in zip(SS, config["top_loci_file"])}
-snp_tables = {k: pd.read_table(v) for k, v in tsv_file.items()}
-full_sumstats = {k: y for k, y in zip(SS, config["full_sumstats"])}
-sample_size = {k: n for k, n in zip(SS, config["N"])}
-
-#for ss in SS:
-	#tsv_file = expand("resources/{ss}_loci_ranges.tsv", ss = ss)[0]
-	#snp_tables[ss] = pd.read_table(tsv_file, sep='\t', dtype=str).set_index("SNP", drop=False)
-	#full_sumstats[ss] = config["full_sumstats"][i]
-        #sample_size[ss] = config["N"][i]
-	#i += 1
+for ss in SS:
+	tsv_file = expand("resources/{ss}_loci_ranges.tsv", ss = ss)[0]
+	snp_tables[ss] = pd.read_table(tsv_file, sep='\t', dtype=str).set_index("SNP", drop=False)
+	full_sumstats[ss] = config["full_sumstats"][i]
+	sample_size[ss] = config["N"][i]
+	i += 1
 
 print(snp_tables)
 
