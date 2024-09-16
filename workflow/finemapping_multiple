@@ -11,11 +11,11 @@ sample_size = {}
 i = 0
 
 for ss in SS:
-tsv_file = expand("resources/{ss}_loci_ranges.tsv", ss = ss)[0]
-snp_tables[ss] = pd.read_table(tsv_file, sep='\t', dtype=str).set_index("SNP", drop=False)
-full_sumstats[ss] = config["full_sumstats"][i]
-sample_size[ss] = config["N"][i]
-i += 1
+	tsv_file = expand("resources/{ss}_loci_ranges.tsv", ss = ss)[0]
+	snp_tables[ss] = pd.read_table(tsv_file, sep='\t', dtype=str).set_index("SNP", drop=False)
+	full_sumstats[ss] = config["full_sumstats"][i]
+	sample_size[ss] = config["N"][i]
+	i += 1
 
 print(snp_tables)
 
