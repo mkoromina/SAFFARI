@@ -68,8 +68,8 @@ rule l2reg_sldsc:
           		--output-prefix {params.prefix} \
           		--sumstats {input.gwas} \
   	   			--allow-missing \
-          		--ref-ld-chr /sc/arion/projects/ad-omics/ashvin/finemapping/UKBB_priors/hg19_baselineLF2.2.UKB{params.ldscores} \
-      			--w-ld-chr /sc/arion/projects/ad-omics/ashvin/finemapping/UKBB_priors/hg19_baselineLF2.2.UKB{params.weights}
+          		--ref-ld-chr resources/UKBB_priors/hg19_baselineLF2.2.UKB{params.ldscores} \
+      			--w-ld-chr resources/UKBB_priors/hg19_baselineLF2.2.UKB{params.weights}
       		"""
 
 rule run_polyfun_susie:
@@ -89,7 +89,7 @@ rule run_polyfun_susie:
  	shell:
  		"""
  		python polyfun/finemapper.py \
- 		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
+ 		--ld resources/UKBB_LD/{params.ld_ranges} \
  		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
  		--n {params.sample_size_gwas} \
  		--chr {params.chrom} \
@@ -126,7 +126,7 @@ rule run_polyfun_finemap:
   	shell:
   		"""
   		python polyfun/finemapper.py \
-  		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
+  		--ld resources/UKBB_LD/{params.ld_ranges} \
   		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
   		--n {params.sample_size_gwas} \
   		--chr {params.chrom} \
@@ -164,7 +164,7 @@ rule run_only_finemap:
  	shell:
  		"""
  		python polyfun/finemapper.py \
- 		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
+ 		--ld resources/UKBB_LD/{params.ld_ranges} \
  		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
  		--n {params.sample_size_gwas} \
  		--chr {params.chrom} \
@@ -204,7 +204,7 @@ rule run_only_susie:
  	shell:
  		"""
  		python polyfun/finemapper.py \
- 		--ld /sc/arion/projects/data-ark/Public_Unrestricted/UKBB_LD/{params.ld_ranges} \
+ 		--ld resources/UKBB_LD/{params.ld_ranges} \
  		--sumstats output/{wildcards.ss}/priors/{wildcards.ss}_l2-ldsc.{params.chrom}.snpvar_ridge_constrained.gz \
  		--n {params.sample_size_gwas} \
  		--chr {params.chrom} \
