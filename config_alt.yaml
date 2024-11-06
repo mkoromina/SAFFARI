@@ -1,0 +1,7 @@
+#config file for running the fetch_UKB_LD_names_multiple module
+summary_stats_prefix:
+  - Mullins_2021
+  - Bellenguez_2021_hg19
+top_loci_file:
+  - /sc/arion/projects/ad-omics/ashvin/finemapping_smk/resources/Mullins_2021_toploci.csv
+  - /sc/arion/projects/ad-omics/data/references/GWAS/Bellenguez_hg19/Bellenguez_2021_hg19_toploci.csv
