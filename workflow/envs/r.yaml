@@ -17,4 +17,4 @@ dependencies:
     - r-cli=3.4.0
     - r-readxl=1.4.2
     - r-yaml=2.3.7
-    -r-vctrs=0.5.0
+    - r-vctrs=0.5.0
