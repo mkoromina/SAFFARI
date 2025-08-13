@@ -1,16 +1,16 @@
-# This snakefile can be run on minerva's LSF using a conda environment with snakemake installed. This can be done using either a configuration profile or from the command line.
+# This snakefile can be run on an LSF cluster using a conda environment with snakemake installed. This can be done using either a configuration profile or from the command line.
 # An example of how to run this snakefile from the command line is shown below:
-# snakemake --snakefile <NAME_OF_THIS_FILE> --executor lsf --default-resources mem_mb=16000 runtime=480 lsf_project=acc_mscic1 lsf_queue=premium --jobs 250 --latency-wait 300 --configfile <PATH_TO_CONFIG_FILE>
+# snakemake --snakefile <NAME_OF_THIS_FILE> --executor lsf --default-resources mem_mb=16000 runtime=480 lsf_project=<PROJECT_NAME> lsf_queue=<QUEUE_NAME> --jobs 250 --latency-wait 3600 --configfile <PATH_TO_CONFIG_FILE> --use-conda
 
-# This will run the snakefile for each GWAS specified in the config file by submitting every occurance of each rule as a separate job (in parallel whenever possible).
+# This will run the snakefile for each GWAS specified in the config file by submitting every occurance of each rule as a separate job to LSF (in parallel whenever possible).
 # Logs from each job will be stored in the logs directory as specified under the "resources:" section of each rule.
 
 # You could even use a wrapper script to submit the initial snakemake call to the cluster as a job itself. An example of a wrapper script is shown below:
 
 #     #!/bin/bash
 #     #BSUB -J SAFFARI_snakemake_launcher
-#     #BSUB -P acc_mscic1
-#     #BSUB -q premium
+#     #BSUB -P <PROJECT_NAME>
+#     #BSUB -q <QUEUE_NAME>
 #     #BSUB -n 1
 #     #BSUB -W 24:00
 #     #BSUB -R "rusage[mem=32000]"
@@ -24,33 +24,26 @@
 #
 #     cd <PATH_TO_YOUR_DIRECTORY>
 #
-#     snakemake --snakefile <NAME_OF_THIS_FILE> --executor lsf --default-resources mem_mb=16000 runtime=480 lsf_project=acc_mscic1 lsf_queue=premium --jobs 250 --latency-wait 300 --configfile <PATH_TO_CONFIG_FILE>
+#     snakemake --snakefile <NAME_OF_THIS_FILE> --executor lsf --default-resources mem_mb=16000 runtime=480 lsf_project=<PROJECT_NAME> lsf_queue=<QUEUE_NAME> --jobs 250 --latency-wait 3600 --configfile <PATH_TO_CONFIG_FILE> --use-conda
 
 
 
 # If you just want to run the snakefile without submitting any jobs to the cluster, you can simply use the following command:
-# snakemake --snakefile <NAME_OF_THIS_FILE> --configfile <PATH_TO_CONFIG_FILE> --cores <NUMBER_OF_CORES>
+# snakemake --snakefile <NAME_OF_THIS_FILE> --configfile <PATH_TO_CONFIG_FILE> --cores <NUMBER_OF_CORES> --use-conda
 
-# This snakefile runs functional and statistical SAFFARI analysis using both susie and finemap using both with LD and without LD for each GWAS specified in the config file.
+
+# This snakefile runs functional and statistical finemapping using both susie and finemap both with LD and without LD.
 # This can be altered by changing the {LD} and {method} wildcards in the rule all.
+# This analysis is performed for each GWAS specified in the config file.
 
-# This snakefile also automatically runs Ensembl Variant Effect Predictor (VEP) on the finemapping results from each GWAS specified in the config file.
-
-# This snakefile uses genome build GRCh38 for all GWAS specified in the config file.
-
-# This snakefile differs from the other snakefiles in the SAFFARI repo in that it requires the creation of a conda environment with the polyfun.yml file and then loads the polyfun environment with the shell prefix for each rule. This is done to ensure that the polyfun environment is loaded for each rule. However, if you prefer to modify the snakefile to use the --use-conda system, that should also work.
-
-# This snakefile is currently designed to be run one directory up from the SAFFARI_analysis folder. A folder which would contain the SAFFARI_analysis directory, the logs directory (for stderr and stdout of each job), this snakefile, and optionally a wrapper script for a job which submits this snakefile.
-
-# plink binary files need to be cleaned, removed rs567122103 from the .bim file since it was duplicated and was crashing the with LD analysis.
-# This was done by running the following from the /sc/arion/projects/mscic1/1000G_GRCh38_plink_binary/ directory:
-
-# echo "rs567122103" > exclude_snps.txt
-# plink --bfile ALL.chr17.phase3_shapeit2_mvncall_integrated_v3plus_nounphased.rsID.genotypes.GRCh38_dbSNP_no_SVs --exclude exclude_snps.txt --make-bed --out ALL.chr17.phase3_shapeit2_mvncall_integrated_v3plus_nounphased.rsID.genotypes.GRCh38_dbSNP_no_SVs
+# This snakefile also automatically runs Ensembl Variant Effect Predictor (VEP) on the finemapping results for each GWAS specified in the config file.
 
 
 
 import pandas as pd
+import os
+
+os.makedirs("logs", exist_ok = True)
 
 SS = config["summary_stats_prefix"]
 CHR = list(range(1,23))
@@ -61,95 +54,91 @@ sample_size = {}
 
 for i, ss in enumerate(SS):
     tsv_file = config["top_loci_file"][i]
-    snp_tables[ss] = pd.read_table(tsv_file, sep='\t', dtype=str).set_index("SNP", drop=False)
+    snp_tables[ss] = pd.read_table(tsv_file, sep='\t', dtype = str).set_index("SNP", drop = False)
     full_sumstats[ss] = config["full_sumstats"][i]
     sample_size[ss] = config["N"][i]
 
 print(snp_tables)
 
-shell.prefix(
-    "source /hpc/packages/minerva-rocky9/anaconda3/2024.06/etc/profile.d/conda.sh;\n"
-    "conda activate /hpc/users/kritze01/.conda/envs/polyfun;\n"
-)
 
 rule all:
     input:
-        expand("SAFFARI_analysis/output/{ss}_neff.munged.parquet", ss = SS),
-        expand("SAFFARI_analysis/output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss=SS, chr=CHR),
-        expand("SAFFARI_analysis/output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge.gz", ss=SS, chr=CHR),
-        expand("SAFFARI_analysis/output/{ss}/polyfun_susie_{LD}_finemap/{ss}_polyfun_susie_all.txt.gz", ss=SS, LD=["noLD", "withLD"]),
-        expand("SAFFARI_analysis/output/{ss}/polyfun_finemap_{LD}_finemap/{ss}_polyfun_finemap_all.txt.gz", ss=SS, LD=["noLD", "withLD"]),
-        expand("SAFFARI_analysis/output/{ss}/only_finemap_{LD}_finemap/{ss}_only_finemap_all.txt.gz", ss=SS, LD=["noLD", "withLD"]),
-        expand("SAFFARI_analysis/output/{ss}/only_susie_{LD}_finemap/{ss}_only_susie_all.txt.gz", ss=SS, LD=["noLD", "withLD"]),
-        expand("SAFFARI_analysis/output/{ss}/{ss}_{method}_{LD}_vep_output.txt", ss=SS, method=["only_finemap", "only_susie", "polyfun_susie", "polyfun_finemap"], LD=["noLD", "withLD"]),
+        expand("output/{ss}_neff.munged.parquet", ss = SS),
+        expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz", ss = SS, chr = CHR),
+        expand("output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge.gz", ss = SS, chr = CHR),
+        expand("output/{ss}/polyfun_susie_{LD}_finemap/{ss}_polyfun_susie_all.txt.gz", ss = SS, LD = ["noLD", "withLD"]),
+        expand("output/{ss}/polyfun_finemap_{LD}_finemap/{ss}_polyfun_finemap_all.txt.gz", ss = SS, LD = ["noLD", "withLD"]),
+        expand("output/{ss}/only_finemap_{LD}_finemap/{ss}_only_finemap_all.txt.gz", ss = SS, LD = ["noLD", "withLD"]),
+        expand("output/{ss}/only_susie_{LD}_finemap/{ss}_only_susie_all.txt.gz", ss = SS, LD = ["noLD", "withLD"]),
+        expand("output/{ss}/{ss}_{method}_{LD}_vep_output.txt", ss = SS, method = ["only_finemap", "only_susie", "polyfun_susie", "polyfun_finemap"], LD = ["noLD", "withLD"]),
 
 
 rule munge_polyfun:
-    input: 
-        lambda wildcards: full_sumstats[wildcards.ss]
-    output:
-        "SAFFARI_analysis/output/{ss}_neff.munged.parquet"
-    params:
-        sample_size=lambda wildcards: sample_size[wildcards.ss]
+    input: lambda wildcards: full_sumstats[wildcards.ss]
+    output: "output/{ss}_neff.munged.parquet"
+    conda: "envs/polyfun.yml"
+    params: sample_size = lambda wildcards: sample_size[wildcards.ss]
     resources:
-        mem_mb= 50000,
-        lsf_jobname="munge_polyfun",
-        lsf_extra="-o logs/munge_polyfun.%J.out -e logs/munge_polyfun.%J.err"
+        mem_mb = 20000,
+        lsf_jobname = "munge_polyfun",
+        lsf_extra = "-o logs/munge_polyfun.%J.out -e logs/munge_polyfun.%J.err"
     shell:
         """
-        python SAFFARI_analysis/polyfun/munge_polyfun_sumstats.py \
+        python polyfun/munge_polyfun_sumstats.py \
         --sumstats {input} \
         --out {output} \
         --n {params.sample_size} \
-        --min-info 0 \
+        --min-info 0.6 \
         --min-maf 0
         """
 
 
 rule l2reg_sldsc:
     input:
-        gwas="SAFFARI_analysis/output/{ss}_neff.munged.parquet"
+        gwas = "output/{ss}_neff.munged.parquet"
     output:
-        output1="SAFFARI_analysis/output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz",
-        output2="SAFFARI_analysis/output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge.gz"
+        output1 = "output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge_constrained.gz",
+        output2 = "output/{ss}/priors/{ss}_l2-ldsc.{chr}.snpvar_ridge.gz"
     params:
-        weights = "weights.UKB.",
-        ldscores = "baselineLF2.2.UKB.",
-        prefix=lambda wc: f"SAFFARI_analysis/output/{wc.ss}/priors/{wc.ss}_l2-ldsc"
+        weights = "/weights.UKB.",
+        ldscores = "/baselineLF2.2.UKB.",
+        prefix = lambda wc: f"output/{wc.ss}/priors/{wc.ss}_l2-ldsc"
+    conda: "envs/polyfun.yml"
     resources:
-        mem_mb = 200000,
-        lsf_jobname="l2reg_sldsc",
-        lsf_extra="-o logs/l2reg_sldsc.%J.out -e logs/l2reg_sldsc.%J.err"
+        mem_mb = 170000,
+        lsf_jobname = "l2reg_sldsc",
+        lsf_extra = "-o logs/l2reg_sldsc.%J.out -e logs/l2reg_sldsc.%J.err"
     shell:
         """
-        python SAFFARI_analysis/polyfun/polyfun.py \
+        python polyfun/polyfun.py \
         --compute-h2-L2 \
         --no-partitions \
         --output-prefix {params.prefix} \
         --sumstats {input.gwas} \
         --allow-missing \
-        --ref-ld-chr /sc/arion/projects/mscic1/baselineLF2.2.UKB/{params.ldscores} \
-        --w-ld-chr /sc/arion/projects/mscic1/baselineLF2.2.UKB/{params.weights}
+        --ref-ld-chr resources/UKBB_priors/hg19_baselineLF2.2.UKB{params.ldscores} \
+        --w-ld-chr resources/UKBB_priors/hg19_baselineLF2.2.UKB{params.weights}
         """
 
 
 rule run_polyfun_susie_noLD:
     input:
-        snpvar=lambda wc: f"SAFFARI_analysis/output/{wc.ss}/priors/{wc.ss}_l2-ldsc.{snp_tables[wc.ss].loc[wc.snp]['chrom_orig']}.snpvar_ridge_constrained.gz"
+        snpvar = lambda wc: f"output/{wc.ss}/priors/{wc.ss}_l2-ldsc.{snp_tables[wc.ss].loc[wc.snp]['chrom_orig']}.snpvar_ridge_constrained.gz"
     output:
-        output="SAFFARI_analysis/output/{ss}/polyfun_susie_noLD_finemap/{ss}_finemap.{snp}.gz"
+        output = "output/{ss}/polyfun_susie_noLD_finemap/{ss}_finemap.{snp}.gz"
     params:
-        sample_size_gwas=lambda wc: sample_size[wc.ss],
-        chrom=lambda wc: snp_tables[wc.ss].loc[wc.snp]['chrom_orig'],
-        start=lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.left'],
-        end=lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.right']
+        sample_size_gwas = lambda wc: sample_size[wc.ss],
+        chrom = lambda wc: snp_tables[wc.ss].loc[wc.snp]['chrom_orig'],
+        start = lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.left'],
+        end = lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.right']
+    conda: "envs/polyfun.yml"
     resources:
-        mem_mb= 50000,
-        lsf_jobname="run_polyfun_susie_noLD",
-        lsf_extra="-o logs/run_polyfun_susie_noLD.%J.out -e logs/run_polyfun_susie_noLD.%J.err"
+        mem_mb = 32000,
+        lsf_jobname = "run_polyfun_susie_noLD",
+        lsf_extra = "-o logs/run_polyfun_susie_noLD.%J.out -e logs/run_polyfun_susie_noLD.%J.err"
     shell:
         """
-        python SAFFARI_analysis/polyfun/finemapper.py \
+        python polyfun/finemapper.py \
         --sumstats {input.snpvar} \
         --n {params.sample_size_gwas} \
         --chr {params.chrom} \
@@ -164,23 +153,24 @@ rule run_polyfun_susie_noLD:
 
 rule run_polyfun_susie_withLD:
     input:
-        snpvar=lambda wc: f"SAFFARI_analysis/output/{wc.ss}/priors/{wc.ss}_l2-ldsc.{snp_tables[wc.ss].loc[wc.snp]['chrom_orig']}.snpvar_ridge_constrained.gz"
+        snpvar = lambda wc: f"output/{wc.ss}/priors/{wc.ss}_l2-ldsc.{snp_tables[wc.ss].loc[wc.snp]['chrom_orig']}.snpvar_ridge_constrained.gz"
     output:
-        output="SAFFARI_analysis/output/{ss}/polyfun_susie_withLD_finemap/{ss}_finemap.{snp}.gz"
+        output = "output/{ss}/polyfun_susie_withLD_finemap/{ss}_finemap.{snp}.gz"
     params:
-        sample_size_gwas=lambda wc: sample_size[wc.ss],
-        chrom=lambda wc: snp_tables[wc.ss].loc[wc.snp]['chrom_orig'],
-        start=lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.left'],
-        end=lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.right'],
+        sample_size_gwas = lambda wc: sample_size[wc.ss],
+        chrom = lambda wc: snp_tables[wc.ss].loc[wc.snp]['chrom_orig'],
+        start = lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.left'],
+        end = lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.right'],
         ld_ranges = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['file']
+    conda: "envs/polyfun.yml"
     resources:
-        mem_mb= 100000,
-        lsf_jobname="run_polyfun_susie_withLD",
-        lsf_extra="-o logs/run_polyfun_susie_withLD.%J.out -e logs/run_polyfun_susie_withLD.%J.err"
+        mem_mb = 32000,
+        lsf_jobname = "run_polyfun_susie_withLD",
+        lsf_extra = "-o logs/run_polyfun_susie_withLD.%J.out -e logs/run_polyfun_susie_withLD.%J.err"
     shell:
         """
-        python SAFFARI_analysis/polyfun/finemapper.py \
-        --geno /sc/arion/projects/mscic1/1000G_GRCh38_plink_binary/ALL.chr{params.chrom}.phase3_shapeit2_mvncall_integrated_v3plus_nounphased.rsID.genotypes.GRCh38_dbSNP_no_SVs \
+        python polyfun/finemapper.py \
+        --geno resources/genotype_ref_panel/HRC_fromBroad/chr1_22c/pop_EUR/HRC.r1-1.EGA.GRCh37.chr{params.chrom}.impute.plink.EUR \
         --sumstats {input.snpvar} \
         --n {params.sample_size_gwas} \
         --chr {params.chrom} \
@@ -195,41 +185,43 @@ rule run_polyfun_susie_withLD:
 
 rule merge_finemapping_jobs_polysusie:
     input: 
-        lambda wc: expand("SAFFARI_analysis/output/{ss}/polyfun_susie_{LD}_finemap/{ss}_finemap.{snp}.gz", ss=wc.ss, snp=snp_tables[wc.ss].index.tolist(), LD=wc.LD)
+        lambda wc: expand("output/{ss}/polyfun_susie_{LD}_finemap/{ss}_finemap.{snp}.gz", ss=wc.ss, snp=snp_tables[wc.ss].index.tolist(), LD=wc.LD)
     output: 
-        "SAFFARI_analysis/output/{ss}/polyfun_susie_{LD}_finemap/{ss}_polyfun_susie_all.txt.gz"
+        "output/{ss}/polyfun_susie_{LD}_finemap/{ss}_polyfun_susie_all.txt.gz"
+    conda: "envs/polyfun.yml"
     resources:
         mem_mb = 8000,
-        lsf_jobname="merge_finemapping_jobs_polysusie",
-        lsf_extra="-o logs/merge_finemapping_jobs_polysusie.%J.out -e logs/merge_finemapping_jobs_polysusie.%J.err"
+        lsf_jobname = "merge_finemapping_jobs_polysusie",
+        lsf_extra = "-o logs/merge_finemapping_jobs_polysusie.%J.out -e logs/merge_finemapping_jobs_polysusie.%J.err"
     shell:
         "cat {input} >> {output}"
 
 
 rule run_polyfun_finemap_noLD:
     input:
-        snpvar=lambda wc: f"SAFFARI_analysis/output/{wc.ss}/priors/{wc.ss}_l2-ldsc.{snp_tables[wc.ss].loc[wc.snp]['chrom_orig']}.snpvar_ridge_constrained.gz"
+        snpvar = lambda wc: f"output/{wc.ss}/priors/{wc.ss}_l2-ldsc.{snp_tables[wc.ss].loc[wc.snp]['chrom_orig']}.snpvar_ridge_constrained.gz"
     output:
-        output="SAFFARI_analysis/output/{ss}/polyfun_finemap_noLD_finemap/{ss}_finemap_finemap.{snp}.gz"
+        output = "output/{ss}/polyfun_finemap_noLD_finemap/{ss}_finemap_finemap.{snp}.gz"
     params:
-        sample_size_gwas=lambda wc: sample_size[wc.ss],
-        chrom=lambda wc: snp_tables[wc.ss].loc[wc.snp]['chrom_orig'],
-        start=lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.left'],
-        end=lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.right']
+        sample_size_gwas = lambda wc: sample_size[wc.ss],
+        chrom = lambda wc: snp_tables[wc.ss].loc[wc.snp]['chrom_orig'],
+        start = lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.left'],
+        end = lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.right']
+    conda: "envs/polyfun.yml"
     resources:
-        mem_mb= 50000,
-        lsf_jobname="run_polyfun_finemap_noLD",
-        lsf_extra="-o logs/run_polyfun_finemap_noLD.%J.out -e logs/run_polyfun_finemap_noLD.%J.err"
+        mem_mb = 32000,
+        lsf_jobname = "run_polyfun_finemap_noLD",
+        lsf_extra = "-o logs/run_polyfun_finemap_noLD.%J.out -e logs/run_polyfun_finemap_noLD.%J.err"
     shell:
         """
-        python SAFFARI_analysis/polyfun/finemapper.py \
+        python polyfun/finemapper.py \
         --sumstats {input.snpvar} \
         --n {params.sample_size_gwas} \
         --chr {params.chrom} \
         --start {params.start} \
         --end {params.end} \
         --method finemap \
-        --finemap-exe SAFFARI_analysis/finemap/finemap_v1.4.2_x86_64/finemap_v1.4.2_x86_64 \
+        --finemap-exe finemap_v1.4.2_x86_64/finemap_v1.4.2_x86_64 \
         --max-num-causal 1 \
         --out {output.output} \
         --allow-missing
@@ -238,30 +230,31 @@ rule run_polyfun_finemap_noLD:
 
 rule run_polyfun_finemap_withLD:
     input:
-        snpvar=lambda wc: f"SAFFARI_analysis/output/{wc.ss}/priors/{wc.ss}_l2-ldsc.{snp_tables[wc.ss].loc[wc.snp]['chrom_orig']}.snpvar_ridge_constrained.gz"
+        snpvar = lambda wc: f"output/{wc.ss}/priors/{wc.ss}_l2-ldsc.{snp_tables[wc.ss].loc[wc.snp]['chrom_orig']}.snpvar_ridge_constrained.gz"
     output:
-        output="SAFFARI_analysis/output/{ss}/polyfun_finemap_withLD_finemap/{ss}_finemap_finemap.{snp}.gz"
+        output = "output/{ss}/polyfun_finemap_withLD_finemap/{ss}_finemap_finemap.{snp}.gz"
     params:
-        sample_size_gwas=lambda wc: sample_size[wc.ss],
-        chrom=lambda wc: snp_tables[wc.ss].loc[wc.snp]['chrom_orig'],
-        start=lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.left'],
-        end=lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.right'],
+        sample_size_gwas = lambda wc: sample_size[wc.ss],
+        chrom = lambda wc: snp_tables[wc.ss].loc[wc.snp]['chrom_orig'],
+        start = lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.left'],
+        end = lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.right'],
         ld_ranges = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['file']
+    conda: "envs/polyfun.yml"
     resources:
-        mem_mb= 100000,
-        lsf_jobname="run_polyfun_finemap_withLD",
-        lsf_extra="-o logs/run_polyfun_finemap_withLD.%J.out -e logs/run_polyfun_finemap_withLD.%J.err"
+        mem_mb = 32000,
+        lsf_jobname = "run_polyfun_finemap_withLD",
+        lsf_extra = "-o logs/run_polyfun_finemap_withLD.%J.out -e logs/run_polyfun_finemap_withLD.%J.err"
     shell:
         """
-        python SAFFARI_analysis/polyfun/finemapper.py \
-        --geno /sc/arion/projects/mscic1/1000G_GRCh38_plink_binary/ALL.chr{params.chrom}.phase3_shapeit2_mvncall_integrated_v3plus_nounphased.rsID.genotypes.GRCh38_dbSNP_no_SVs \
+        python polyfun/finemapper.py \
+        --geno resources/genotype_ref_panel/HRC_fromBroad/chr1_22c/pop_EUR/HRC.r1-1.EGA.GRCh37.chr{params.chrom}.impute.plink.EUR \
         --sumstats {input.snpvar} \
         --n {params.sample_size_gwas} \
         --chr {params.chrom} \
         --start {params.start} \
         --end {params.end} \
         --method finemap \
-        --finemap-exe SAFFARI_analysis/finemap/finemap_v1.4.2_x86_64/finemap_v1.4.2_x86_64 \
+        --finemap-exe finemap_v1.4.2_x86_64/finemap_v1.4.2_x86_64 \
         --max-num-causal 5 \
         --out {output.output} \
         --allow-missing
@@ -270,41 +263,43 @@ rule run_polyfun_finemap_withLD:
 
 rule merge_finemapping_jobs_polyfinemap:
     input: 
-        lambda wc: expand("SAFFARI_analysis/output/{ss}/polyfun_finemap_{LD}_finemap/{ss}_finemap_finemap.{snp}.gz", ss=wc.ss, snp=snp_tables[wc.ss].index.tolist(), LD=wc.LD)
+        lambda wc: expand("output/{ss}/polyfun_finemap_{LD}_finemap/{ss}_finemap_finemap.{snp}.gz", ss=wc.ss, snp=snp_tables[wc.ss].index.tolist(), LD=wc.LD)
     output: 
-        "SAFFARI_analysis/output/{ss}/polyfun_finemap_{LD}_finemap/{ss}_polyfun_finemap_all.txt.gz"
+        "output/{ss}/polyfun_finemap_{LD}_finemap/{ss}_polyfun_finemap_all.txt.gz"
+    conda: "envs/polyfun.yml"
     resources:
         mem_mb = 8000,
-        lsf_jobname="merge_finemapping_jobs_polyfinemap",
-        lsf_extra="-o logs/merge_finemapping_jobs_polyfinemap.%J.out -e logs/merge_finemapping_jobs_polyfinemap.%J.err"
+        lsf_jobname = "merge_finemapping_jobs_polyfinemap",
+        lsf_extra = "-o logs/merge_finemapping_jobs_polyfinemap.%J.out -e logs/merge_finemapping_jobs_polyfinemap.%J.err"
     shell:
         "cat {input} >> {output}"
 
 
 rule run_only_finemap_noLD:
     input:
-        snpvar=lambda wc: f"SAFFARI_analysis/output/{wc.ss}/priors/{wc.ss}_l2-ldsc.{snp_tables[wc.ss].loc[wc.snp]['chrom_orig']}.snpvar_ridge_constrained.gz"
+        snpvar = lambda wc: f"output/{wc.ss}/priors/{wc.ss}_l2-ldsc.{snp_tables[wc.ss].loc[wc.snp]['chrom_orig']}.snpvar_ridge_constrained.gz"
     output:
-        output="SAFFARI_analysis/output/{ss}/only_finemap_noLD_finemap/{ss}_only_finemap.{snp}.gz"
+        output = "output/{ss}/only_finemap_noLD_finemap/{ss}_only_finemap.{snp}.gz"
     params:
-        sample_size_gwas=lambda wc: sample_size[wc.ss],
-        chrom=lambda wc: snp_tables[wc.ss].loc[wc.snp]['chrom_orig'],
-        start=lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.left'],
-        end=lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.right']
+        sample_size_gwas = lambda wc: sample_size[wc.ss],
+        chrom = lambda wc: snp_tables[wc.ss].loc[wc.snp]['chrom_orig'],
+        start = lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.left'],
+        end = lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.right']
+    conda: "envs/polyfun.yml"
     resources:
-        mem_mb = 50000,
-        lsf_jobname="run_only_finemap_noLD",
-        lsf_extra="-o logs/run_only_finemap_noLD.%J.out -e logs/run_only_finemap_noLD.%J.err"
+        mem_mb = 32000,
+        lsf_jobname = "run_only_finemap_noLD",
+        lsf_extra = "-o logs/run_only_finemap_noLD.%J.out -e logs/run_only_finemap_noLD.%J.err"
     shell:
         """
-        python SAFFARI_analysis/polyfun/finemapper.py \
+        python polyfun/finemapper.py \
         --sumstats {input.snpvar} \
         --n {params.sample_size_gwas} \
         --chr {params.chrom} \
         --start {params.start} \
         --end {params.end} \
         --method finemap \
-        --finemap-exe SAFFARI_analysis/finemap/finemap_v1.4.2_x86_64/finemap_v1.4.2_x86_64 \
+        --finemap-exe finemap_v1.4.2_x86_64/finemap_v1.4.2_x86_64 \
         --non-funct \
         --max-num-causal 1 \
         --out {output.output} \
@@ -314,30 +309,31 @@ rule run_only_finemap_noLD:
 
 rule run_only_finemap_withLD:
     input:
-        snpvar=lambda wc: f"SAFFARI_analysis/output/{wc.ss}/priors/{wc.ss}_l2-ldsc.{snp_tables[wc.ss].loc[wc.snp]['chrom_orig']}.snpvar_ridge_constrained.gz"
+        snpvar = lambda wc: f"output/{wc.ss}/priors/{wc.ss}_l2-ldsc.{snp_tables[wc.ss].loc[wc.snp]['chrom_orig']}.snpvar_ridge_constrained.gz"
     output:
-        output="SAFFARI_analysis/output/{ss}/only_finemap_withLD_finemap/{ss}_only_finemap.{snp}.gz"
+        output = "output/{ss}/only_finemap_withLD_finemap/{ss}_only_finemap.{snp}.gz"
     params:
-        sample_size_gwas=lambda wc: sample_size[wc.ss],
-        chrom=lambda wc: snp_tables[wc.ss].loc[wc.snp]['chrom_orig'],
-        start=lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.left'],
-        end=lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.right'],
+        sample_size_gwas = lambda wc: sample_size[wc.ss],
+        chrom = lambda wc: snp_tables[wc.ss].loc[wc.snp]['chrom_orig'],
+        start = lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.left'],
+        end = lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.right'],
         ld_ranges = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['file']
+    conda: "envs/polyfun.yml"
     resources:
-        mem_mb = 100000,
-        lsf_jobname="run_only_finemap_withLD",
-        lsf_extra="-o logs/run_only_finemap_withLD.%J.out -e logs/run_only_finemap_withLD.%J.err"
+        mem_mb = 32000,
+        lsf_jobname = "run_only_finemap_withLD",
+        lsf_extra = "-o logs/run_only_finemap_withLD.%J.out -e logs/run_only_finemap_withLD.%J.err"
     shell:
         """
-        python SAFFARI_analysis/polyfun/finemapper.py \
-        --geno /sc/arion/projects/mscic1/1000G_GRCh38_plink_binary/ALL.chr{params.chrom}.phase3_shapeit2_mvncall_integrated_v3plus_nounphased.rsID.genotypes.GRCh38_dbSNP_no_SVs \
+        python polyfun/finemapper.py \
+        --geno resources/genotype_ref_panel/HRC_fromBroad/chr1_22c/pop_EUR/HRC.r1-1.EGA.GRCh37.chr{params.chrom}.impute.plink.EUR \
         --sumstats {input.snpvar} \
         --n {params.sample_size_gwas} \
         --chr {params.chrom} \
         --start {params.start} \
         --end {params.end} \
         --method finemap \
-        --finemap-exe SAFFARI_analysis/finemap/finemap_v1.4.2_x86_64/finemap_v1.4.2_x86_64 \
+        --finemap-exe finemap_v1.4.2_x86_64/finemap_v1.4.2_x86_64 \
         --non-funct \
         --max-num-causal 5 \
         --out {output.output} \
@@ -347,34 +343,36 @@ rule run_only_finemap_withLD:
 
 rule merge_finemapping_jobs_onlyfinemap:
     input: 
-        lambda wc: expand("SAFFARI_analysis/output/{ss}/only_finemap_{LD}_finemap/{ss}_only_finemap.{snp}.gz", ss=wc.ss, snp=snp_tables[wc.ss].index.tolist(), LD=wc.LD)
+        lambda wc: expand("output/{ss}/only_finemap_{LD}_finemap/{ss}_only_finemap.{snp}.gz", ss=wc.ss, snp=snp_tables[wc.ss].index.tolist(), LD=wc.LD)
     output: 
-        "SAFFARI_analysis/output/{ss}/only_finemap_{LD}_finemap/{ss}_only_finemap_all.txt.gz"
+        "output/{ss}/only_finemap_{LD}_finemap/{ss}_only_finemap_all.txt.gz"
+    conda: "envs/polyfun.yml"
     resources:
         mem_mb = 8000,
-        lsf_jobname="merge_finemapping_jobs_onlyfinemap",
-        lsf_extra="-o logs/merge_finemapping_jobs_onlyfinemap.%J.out -e logs/merge_finemapping_jobs_onlyfinemap.%J.err"
-    shell:  
+        lsf_jobname = "merge_finemapping_jobs_onlyfinemap",
+        lsf_extra = "-o logs/merge_finemapping_jobs_onlyfinemap.%J.out -e logs/merge_finemapping_jobs_onlyfinemap.%J.err"
+    shell:
         "cat {input} >> {output}"
 
 
 rule run_only_susie_noLD:
     input:
-        snpvar=lambda wc: f"SAFFARI_analysis/output/{wc.ss}/priors/{wc.ss}_l2-ldsc.{snp_tables[wc.ss].loc[wc.snp]['chrom_orig']}.snpvar_ridge_constrained.gz"
+        snpvar = lambda wc: f"output/{wc.ss}/priors/{wc.ss}_l2-ldsc.{snp_tables[wc.ss].loc[wc.snp]['chrom_orig']}.snpvar_ridge_constrained.gz"
     output:
-        output="SAFFARI_analysis/output/{ss}/only_susie_noLD_finemap/{ss}_only_susie.{snp}.gz"
+        output = "output/{ss}/only_susie_noLD_finemap/{ss}_only_susie.{snp}.gz"
     params:
-        sample_size_gwas=lambda wc: sample_size[wc.ss],
-        chrom=lambda wc: snp_tables[wc.ss].loc[wc.snp]['chrom_orig'],
-        start=lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.left'],
-        end=lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.right']
+        sample_size_gwas = lambda wc: sample_size[wc.ss],
+        chrom = lambda wc: snp_tables[wc.ss].loc[wc.snp]['chrom_orig'],
+        start = lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.left'],
+        end = lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.right']
+    conda: "envs/polyfun.yml"
     resources:
-        mem_mb = 50000,
-        lsf_jobname="run_only_susie_noLD",
-        lsf_extra="-o logs/run_only_susie_noLD.%J.out -e logs/run_only_susie_noLD.%J.err"
+        mem_mb = 32000,
+        lsf_jobname = "run_only_susie_noLD",
+        lsf_extra = "-o logs/run_only_susie_noLD.%J.out -e logs/run_only_susie_noLD.%J.err"
     shell:
         """
-        python SAFFARI_analysis/polyfun/finemapper.py \
+        python polyfun/finemapper.py \
         --sumstats {input.snpvar} \
         --n {params.sample_size_gwas} \
         --chr {params.chrom} \
@@ -390,23 +388,24 @@ rule run_only_susie_noLD:
 
 rule run_only_susie_withLD:
     input:
-        snpvar=lambda wc: f"SAFFARI_analysis/output/{wc.ss}/priors/{wc.ss}_l2-ldsc.{snp_tables[wc.ss].loc[wc.snp]['chrom_orig']}.snpvar_ridge_constrained.gz"
+        snpvar = lambda wc: f"output/{wc.ss}/priors/{wc.ss}_l2-ldsc.{snp_tables[wc.ss].loc[wc.snp]['chrom_orig']}.snpvar_ridge_constrained.gz"
     output:
-        output="SAFFARI_analysis/output/{ss}/only_susie_withLD_finemap/{ss}_only_susie.{snp}.gz"
+        output = "output/{ss}/only_susie_withLD_finemap/{ss}_only_susie.{snp}.gz"
     params:
-        sample_size_gwas=lambda wc: sample_size[wc.ss],
-        chrom=lambda wc: snp_tables[wc.ss].loc[wc.snp]['chrom_orig'],
-        start=lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.left'],
-        end=lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.right'],
+        sample_size_gwas = lambda wc: sample_size[wc.ss],
+        chrom = lambda wc: snp_tables[wc.ss].loc[wc.snp]['chrom_orig'],
+        start = lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.left'],
+        end = lambda wc: snp_tables[wc.ss].loc[wc.snp]['range.right'],
         ld_ranges = lambda wildcards: snp_tables[wildcards.ss].loc[wildcards.snp]['file']
+    conda: "envs/polyfun.yml"
     resources:
-        mem_mb = 100000,
-        lsf_jobname="run_only_susie_withLD",
-        lsf_extra="-o logs/run_only_susie_withLD.%J.out -e logs/run_only_susie_withLD.%J.err"
+        mem_mb = 32000,
+        lsf_jobname = "run_only_susie_withLD",
+        lsf_extra = "-o logs/run_only_susie_withLD.%J.out -e logs/run_only_susie_withLD.%J.err"
     shell:
         """
-        python SAFFARI_analysis/polyfun/finemapper.py \
-        --geno /sc/arion/projects/mscic1/1000G_GRCh38_plink_binary/ALL.chr{params.chrom}.phase3_shapeit2_mvncall_integrated_v3plus_nounphased.rsID.genotypes.GRCh38_dbSNP_no_SVs \
+        python polyfun/finemapper.py \
+        --geno resources/genotype_ref_panel/HRC_fromBroad/chr1_22c/pop_EUR/HRC.r1-1.EGA.GRCh37.chr{params.chrom}.impute.plink.EUR \
         --sumstats {input.snpvar} \
         --n {params.sample_size_gwas} \
         --chr {params.chrom} \
@@ -422,9 +421,10 @@ rule run_only_susie_withLD:
 
 rule merge_finemapping_jobs_onlysusie:
     input: 
-        lambda wc: expand("SAFFARI_analysis/output/{ss}/only_susie_{LD}_finemap/{ss}_only_susie.{snp}.gz", ss=wc.ss, snp=snp_tables[wc.ss].index.tolist(), LD=wc.LD)
+        lambda wc: expand("output/{ss}/only_susie_{LD}_finemap/{ss}_only_susie.{snp}.gz", ss=wc.ss, snp=snp_tables[wc.ss].index.tolist(), LD=wc.LD)
     output: 
-        "SAFFARI_analysis/output/{ss}/only_susie_{LD}_finemap/{ss}_only_susie_all.txt.gz"
+        "output/{ss}/only_susie_{LD}_finemap/{ss}_only_susie_all.txt.gz"
+    conda: "envs/polyfun.yml"
     resources:
         mem_mb = 8000,
         lsf_jobname = "merge_finemapping_jobs_onlysusie",
@@ -435,47 +435,51 @@ rule merge_finemapping_jobs_onlysusie:
 
 rule filter_for_vep:
     input:
-        "SAFFARI_analysis/output/{ss}/{method}_{LD}_finemap/{ss}_{method}_all.txt.gz"
+        "output/{ss}/{method}_{LD}_finemap/{ss}_{method}_all.txt.gz"
     output:
-        "SAFFARI_analysis/output/{ss}/{method}_{LD}_finemap/{ss}_{method}_filtered.txt.gz"
+        "output/{ss}/{method}_{LD}_finemap/{ss}_{method}_filtered.txt.gz"
+    conda: "envs/polyfun.yml"
     resources:
-        lsf_jobname="filter_for_vep",
-        lsf_extra="-o logs/filter_for_vep.%J.out -e logs/filter_for_vep.%J.err"
+        mem_mb = 16000,
+        lsf_jobname = "filter_for_vep",
+        lsf_extra = "-o logs/filter_for_vep.%J.out -e logs/filter_for_vep.%J.err"
     run:
         import pandas as pd
         import gzip
         
         with gzip.open(input[0], 'rt') as f:
-            df = pd.read_csv(f, sep='\t')
+            df = pd.read_csv(f, sep = '\t')
         
-        df['PIP'] = pd.to_numeric(df['PIP'], errors='coerce')
-        df = df.dropna(subset=['PIP'])
+        df['PIP'] = pd.to_numeric(df['PIP'], errors = 'coerce')
+        df = df.dropna(subset = ['PIP'])
         
         if 'susie' in wildcards.method:
             filtered_df = df[(df['PIP'] > 0.1)]
         elif 'finemap' in wildcards.method:
-            df['CREDIBLE_SET'] = pd.to_numeric(df['CREDIBLE_SET'], errors='coerce')
-            df = df.dropna(subset=['CREDIBLE_SET'])
+            df['CREDIBLE_SET'] = pd.to_numeric(df['CREDIBLE_SET'], errors = 'coerce')
+            df = df.dropna(subset = ['CREDIBLE_SET'])
             filtered_df = df[(df['PIP'] > 0.1) & (df['CREDIBLE_SET'] != 0)]
 
         with gzip.open(output[0], 'wt') as f:
-            filtered_df.to_csv(f, sep='\t', index=False)
+            filtered_df.to_csv(f, sep = '\t', index = False)
 
 
 rule prepare_vep_input:
     input:
-        "SAFFARI_analysis/output/{ss}/{method}_{LD}_finemap/{ss}_{method}_filtered.txt.gz"
+        "output/{ss}/{method}_{LD}_finemap/{ss}_{method}_filtered.txt.gz"
     output:
-        "SAFFARI_analysis/output/{ss}/{method}_{LD}_finemap/{ss}_{method}_{LD}_vep_input.txt"
+        "output/{ss}/{method}_{LD}_finemap/{ss}_{method}_{LD}_vep_input.txt"
+    conda: "envs/polyfun.yml"
     resources:
-        lsf_jobname="prepare_vep_input",
-        lsf_extra="-o logs/prepare_vep_input.%J.out -e logs/prepare_vep_input.%J.err"
+        mem_mb = 16000,
+        lsf_jobname = "prepare_vep_input",
+        lsf_extra = "-o logs/prepare_vep_input.%J.out -e logs/prepare_vep_input.%J.err"
     run:
         import pandas as pd
         import gzip
         
         with gzip.open(input[0], 'rt') as f:
-            df = pd.read_csv(f, sep='\t')
+            df = pd.read_csv(f, sep = '\t')
         
         unique_variants = set()
         vep_input = []
@@ -500,21 +504,23 @@ rule prepare_vep_input:
 
 rule run_vep_annotation:
     input:
-        input="SAFFARI_analysis/output/{ss}/{method}_{LD}_finemap/{ss}_{method}_{LD}_vep_input.txt"
+        input = "output/{ss}/{method}_{LD}_finemap/{ss}_{method}_{LD}_vep_input.txt"
     output:
-        output="SAFFARI_analysis/output/{ss}/{ss}_{method}_{LD}_vep_output.txt"
+        output = "output/{ss}/{ss}_{method}_{LD}_vep_output.txt"
+    conda: "envs/vep.yml"
     resources:
-        lsf_jobname="run_vep_annotation",
-        lsf_extra="-o logs/run_vep_annotation.%J.out -e logs/run_vep_annotation.%J.err"
+        mem_mb = 16000,
+        lsf_jobname = "run_vep_annotation",
+        lsf_extra = "-o logs/run_vep_annotation.%J.out -e logs/run_vep_annotation.%J.err"
     shell:
         """
         module load vep/112
         
         vep -i {input.input} \
             -o {output.output} \
-            --dir_cache /hpc/packages/minerva-centos7/vep/112/cache \
+            --dir_cache vep/112/cache \
             --offline \
-            --assembly GRCh38 \
+            --assembly GRCh37 \
             --symbol
         """
 

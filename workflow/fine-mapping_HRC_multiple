@@ -131,7 +131,7 @@ rule run_polyfun_finemap:
   		--start {params.start} \
   		--end {params.end} \
   		--method finemap \
- 		--finemap-exe /hpc/packages/minerva-centos7/finemap/1.4/finemap_v1.4_x86_64/finemap_v1.4_x86_64 \
+ 		--finemap-exe finemap_v1.4.2_x86_64/finemap_v1.4.2_x86_64 \
   		--max-num-causal 5 \
   		--out {output.output} \
   		--allow-missing
@@ -168,7 +168,7 @@ rule run_only_finemap:
  		--start {params.start} \
  		--end {params.end} \
  		--method finemap \
-		--finemap-exe /hpc/packages/minerva-centos7/finemap/1.4/finemap_v1.4_x86_64/finemap_v1.4_x86_64 \
+		--finemap-exe finemap_v1.4.2_x86_64/finemap_v1.4.2_x86_64 \
 		--non-funct \
  		--max-num-causal 5 \
  		--out {output.output} \
