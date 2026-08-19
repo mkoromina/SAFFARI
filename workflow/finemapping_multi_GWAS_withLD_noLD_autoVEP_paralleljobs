@@ -33,9 +33,10 @@
 
 
 # This snakefile runs functional and statistical finemapping using both susie and finemap both with LD and without LD.
+# Note (August 2026): For the SuSiE noLD outputs, the analyst has to customize the filtering and exclude the CREDIBLE_SET > 0 criterion.
+
 # This can be altered by changing the {LD} and {method} wildcards in the rule all.
 # This analysis is performed for each GWAS specified in the config file.
-
 # This snakefile also automatically runs Ensembl Variant Effect Predictor (VEP) on the finemapping results for each GWAS specified in the config file.
 
 
