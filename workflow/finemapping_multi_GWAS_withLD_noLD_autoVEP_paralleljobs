@@ -438,30 +438,14 @@ rule filter_for_vep:
         "output/{ss}/{method}_{LD}_finemap/{ss}_{method}_all.txt.gz"
     output:
         "output/{ss}/{method}_{LD}_finemap/{ss}_{method}_filtered.txt.gz"
-    conda: "envs/polyfun.yml"
+    conda:
+        "envs/polyfun.yml"
     resources:
-        mem_mb = 16000,
-        lsf_jobname = "filter_for_vep",
-        lsf_extra = "-o logs/filter_for_vep.%J.out -e logs/filter_for_vep.%J.err"
-    run:
-        import pandas as pd
-        import gzip
-        
-        with gzip.open(input[0], 'rt') as f:
-            df = pd.read_csv(f, sep = '\t')
-        
-        df['PIP'] = pd.to_numeric(df['PIP'], errors = 'coerce')
-        df = df.dropna(subset = ['PIP'])
-        
-        if 'susie' in wildcards.method:
-            filtered_df = df[(df['PIP'] > 0.1)]
-        elif 'finemap' in wildcards.method:
-            df['CREDIBLE_SET'] = pd.to_numeric(df['CREDIBLE_SET'], errors = 'coerce')
-            df = df.dropna(subset = ['CREDIBLE_SET'])
-            filtered_df = df[(df['PIP'] > 0.1) & (df['CREDIBLE_SET'] != 0)]
-
-        with gzip.open(output[0], 'wt') as f:
-            filtered_df.to_csv(f, sep = '\t', index = False)
+        mem_mb=16000,
+        lsf_jobname="filter_for_vep",
+        lsf_extra="-o logs/filter_for_vep.%J.out -e logs/filter_for_vep.%J.err"
+    script:
+        "scripts/filter_for_vep.py"
 
 
 rule prepare_vep_input:
@@ -469,37 +453,14 @@ rule prepare_vep_input:
         "output/{ss}/{method}_{LD}_finemap/{ss}_{method}_filtered.txt.gz"
     output:
         "output/{ss}/{method}_{LD}_finemap/{ss}_{method}_{LD}_vep_input.txt"
-    conda: "envs/polyfun.yml"
+    conda:
+        "envs/polyfun.yml"
     resources:
-        mem_mb = 16000,
-        lsf_jobname = "prepare_vep_input",
-        lsf_extra = "-o logs/prepare_vep_input.%J.out -e logs/prepare_vep_input.%J.err"
-    run:
-        import pandas as pd
-        import gzip
-        
-        with gzip.open(input[0], 'rt') as f:
-            df = pd.read_csv(f, sep = '\t')
-        
-        unique_variants = set()
-        vep_input = []
-        
-        for _, row in df.iterrows():
-            try:
-                int(row['BP'])
-            except (ValueError, TypeError):
-                continue
-
-            variant_key = f"{row['CHR']}:{row['BP']}:{row['A2']}:{row['A1']}"
-            
-            if variant_key not in unique_variants:
-                unique_variants.add(variant_key)
-                vep_line = f"{row['CHR']} {row['BP']} {row['BP']} {row['A2']}/{row['A1']} +"
-                vep_input.append(vep_line)
-                
-        with open(output[0], 'w') as f:
-            for line in vep_input:
-                f.write(line + '\n')
+        mem_mb=16000,
+        lsf_jobname="prepare_vep_input",
+        lsf_extra="-o logs/prepare_vep_input.%J.out -e logs/prepare_vep_input.%J.err"
+    script:
+        "scripts/prepare_vep_input.py"
 
 
 rule run_vep_annotation:
