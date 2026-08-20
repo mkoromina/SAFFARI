@@ -19,15 +19,6 @@ print(snp_tables)
 
 
 def all_targets(pattern):
-	"""Build concrete paths for every ss, using that ss's own SNP list.
-
-	Use this in rule `all` (or anywhere else you need the full, correct
-	cross-product of ss x that-ss's-snps) instead of
-	expand(pattern, ss=SS, snp=snp_tables[ss].index.tolist()), which is
-	buggy for len(SS) > 1: snp_tables[ss] there evaluates eagerly using
-	whatever bare `ss` was last bound to (the last element of SS), not
-	the ss being expanded.
-	"""
 	paths = []
 	for ss in SS:
 		paths += expand(pattern, ss = ss, snp = snp_tables[ss].index.tolist())
