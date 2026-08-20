@@ -10,10 +10,10 @@ full_sumstats = {}
 sample_size = {}
 
 for i, ss in enumerate(SS):
-	tsv_file = expand("resources/{ss}_loci_ranges.tsv", ss = ss)[0]
-	snp_tables[ss] = pd.read_table(tsv_file, sep='\t', dtype=str).set_index("SNP", drop=False)
-	full_sumstats[ss] = config["full_sumstats"][i]
-	sample_size[ss] = config["N"][i]
+    tsv_file = config["top_loci_file"][i]
+    snp_tables[ss] = pd.read_table(tsv_file, sep='\t', dtype = str).set_index("SNP", drop = False)
+    full_sumstats[ss] = config["full_sumstats"][i]
+    sample_size[ss] = config["N"][i]
 
 print(snp_tables)
 
