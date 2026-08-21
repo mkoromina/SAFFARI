@@ -88,7 +88,7 @@ rule munge_polyfun:
         python polyfun/munge_polyfun_sumstats.py \
         --sumstats {input} \
         --out {output} \
-        --n {params.sample_size} \
+        --n {params.sample_size} \ # optional; omit if N is provided in the sumstats
         --min-info 0.6 \
         --min-maf 0
         """
@@ -469,7 +469,6 @@ rule run_vep_annotation:
         input = "output/{ss}/{method}_{LD}_finemap/{ss}_{method}_{LD}_vep_input.txt"
     output:
         output = "output/{ss}/{ss}_{method}_{LD}_vep_output.txt"
-    conda: "envs/vep.yml"
     resources:
         mem_mb = 16000,
         lsf_jobname = "run_vep_annotation",
