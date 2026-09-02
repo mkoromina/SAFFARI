@@ -11,21 +11,17 @@ with gzip.open(input_file, "rt") as f:
     df = pd.read_csv(f, sep="\t")
 
 df["PIP"] = pd.to_numeric(df["PIP"], errors="coerce")
-df = df.dropna(subset=["PIP"])
+df["CREDIBLE_SET"] = pd.to_numeric(
+    df["CREDIBLE_SET"], errors="coerce"
+)
 
-if "susie" in method:
-    filtered_df = df[df["PIP"] > 0.5]
+df = df.dropna(subset=["PIP", "CREDIBLE_SET"])
 
-elif "finemap" in method:
-    df["CREDIBLE_SET"] = pd.to_numeric(
-        df["CREDIBLE_SET"], errors="coerce"
-    )
-    df = df.dropna(subset=["CREDIBLE_SET"])
+if "susie" in method or "finemap" in method:
     filtered_df = df[
         (df["PIP"] > 0.5) &
         (df["CREDIBLE_SET"] != 0)
     ]
-
 else:
     raise ValueError(f"Unknown method: {method}")
 
